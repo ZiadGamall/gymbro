@@ -1,0 +1,175 @@
+:root {
+  --bg-a: #f8f9fb;
+  --bg-b: #edf2f6;
+  --card: #ffffff;
+  --text: #20252c;
+  --muted: #637084;
+  --line: #d7dde5;
+  --muscle-default: #d9d9d9;
+  --muscle-highlight: #d92d2d;
+  --button: #1f2937;
+  --button-active: #d92d2d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 20% 10%, #ffffff 0%, var(--bg-a) 35%, var(--bg-b) 100%);
+}
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.muscle-anatomy {
+  width: min(980px, 100%);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 18px 38px rgba(16, 24, 40, 0.08);
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 20px;
+}
+
+.anatomy-header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.anatomy-header h1 {
+  font-size: 1.15rem;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+.view-controls {
+  display: inline-flex;
+  border-radius: 999px;
+  background: #eef1f4;
+  padding: 4px;
+}
+
+.view-btn {
+  border: 0;
+  border-radius: 999px;
+  min-width: 88px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--button);
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.view-btn.is-active {
+  background: var(--button-active);
+  color: #fff;
+}
+
+.anatomy-stage {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfcfd 0%, #f4f7fa 100%);
+  min-height: 580px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.svg-shell {
+  width: min(460px, 90%);
+}
+
+.anatomy-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.muscle-path {
+  fill: var(--muscle-default);
+  stroke: #a8aeb7;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: fill 220ms ease, transform 180ms ease;
+  transform-origin: center;
+}
+
+.muscle-path:hover,
+.muscle-path.is-active {
+  fill: var(--muscle-highlight);
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -120%);
+  pointer-events: none;
+  background: rgba(20, 20, 22, 0.94);
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.tooltip.is-visible {
+  opacity: 1;
+}
+
+.info-panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background: #fcfdff;
+}
+
+.info-panel h2,
+.info-panel h3 {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+}
+
+#selected-muscle {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+#exercise-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  display: grid;
+  gap: 5px;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 860px) {
+  .muscle-anatomy {
+    grid-template-columns: 1fr;
+  }
+
+  .anatomy-stage {
+    min-height: 520px;
+  }
+}

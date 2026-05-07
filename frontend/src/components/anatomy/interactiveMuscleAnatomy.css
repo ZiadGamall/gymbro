@@ -1,0 +1,165 @@
+.ima-card {
+  border: 1px solid #e6e8eb;
+  border-radius: 18px;
+  background: #f7f8fa;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+  padding: 1.1rem;
+}
+
+.ima-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ima-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.ima-header p {
+  margin: 0.35rem 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.ima-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d7dbe1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #4b5563;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+}
+
+.ima-layout {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 1.1rem;
+}
+
+.ima-stage {
+  position: relative;
+  border: 1px solid #e3e6ea;
+  border-radius: 14px;
+  background: #ffffff;
+  min-height: 620px;
+  padding: 0.9rem;
+  overflow: hidden;
+}
+
+.ima-figure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  height: 100%;
+}
+
+.ima-figure-card {
+  margin: 0;
+  border: 1px solid #eceff2;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f7f9fb 0%, #eff3f6 100%);
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  padding: 0.6rem 0.2rem 0.45rem;
+}
+
+.ima-figure-card figcaption {
+  color: #4b5563;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.ima-svg {
+  width: min(100%, 250px);
+  height: auto;
+}
+
+.ima-muscle-path {
+  fill: #d4d8de;
+  stroke: #9aa3ad;
+  stroke-width: 1.65;
+  cursor: pointer;
+  transition: fill 180ms ease, stroke 180ms ease;
+}
+
+.ima-muscle-path:hover,
+.ima-muscle-path.is-active {
+  fill: #e63946;
+  stroke: #c1121f;
+}
+
+.ima-tooltip {
+  position: fixed;
+  transform: translate(12px, 12px);
+  pointer-events: none;
+  border: 1px solid #202734;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.97);
+  color: #f9fafb;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.55rem;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  z-index: 60;
+}
+
+.ima-tooltip.is-visible {
+  opacity: 1;
+}
+
+.ima-info {
+  border: 1px solid #e3e7ec;
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: #ffffff;
+}
+
+.ima-info h3,
+.ima-info h4 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.ima-selected-name {
+  margin: 0.5rem 0 0.9rem;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.ima-info ul {
+  margin: 0.45rem 0 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  color: #4b5563;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 920px) {
+  .ima-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ima-stage {
+    min-height: 500px;
+  }
+
+  .ima-figure-grid {
+    grid-template-columns: 1fr;
+  }
+}
