@@ -1,210 +1,262 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { Dumbbell, Menu, X, User, Search, BarChart3, Home, LogOut, ClipboardCheck, Salad, Activity, Flame } from 'lucide-react'
-import axios from 'axios'
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Activity,
+  BarChart3,
+  ClipboardCheck,
+  Dumbbell,
+  Flame,
+  Home,
+  LogOut,
+  Menu,
+  Search,
+  Sparkles,
+  User,
+  X,
+} from "lucide-react";
+import axios from "axios";
+
+const navVariants = {
+  hidden: { opacity: 0, y: -12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const menuVariants = {
+  hidden: { opacity: 0, height: 0 },
+  visible: {
+    opacity: 1,
+    height: "auto",
+    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0,
+    height: 0,
+    transition: { duration: 0.2, ease: [0.4, 0, 1, 1] },
+  },
+};
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [me, setMe] = useState(null)
-  const navigate = useNavigate()
-  const location = useLocation()
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [me, setMe] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    setIsLoggedIn(!!token)
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
     if (!token) {
-      setMe(null)
-      return
+      setMe(null);
+      return;
     }
 
     const fetchMe = async () => {
       try {
-        const res = await axios.get('/api/v1/users/me', {
+        const res = await axios.get("/api/v1/users/me", {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        setMe(res?.data?.data?.user || null)
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setMe(res?.data?.data?.user || null);
       } catch {
-        setMe(null)
+        setMe(null);
       }
-    }
+    };
 
-    fetchMe()
-  }, [location])
+    fetchMe();
+  }, [location]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    setIsLoggedIn(false)
-    setMe(null)
-    navigate('/')
-    setIsMobileMenuOpen(false)
-  }
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setMe(null);
+    navigate("/");
+    setIsMobileMenuOpen(false);
+  };
 
   const navItems = [
-    { path: '/', label: 'Home', icon: Home },
-    { path: '/food-search', label: 'Food Search', icon: Search },
+    { path: "/", label: "Home", icon: Home },
+    { path: "/food-search", label: "Foods", icon: Search },
     ...(isLoggedIn
       ? [
-          { path: '/dashboard', label: 'Today', icon: BarChart3 },
-          { path: '/onboarding', label: 'Plan Setup', icon: ClipboardCheck },
-          { path: '/nutrition', label: 'Nutrition', icon: Salad },
-          { path: '/workouts', label: 'Workouts', icon: Activity },
-          { path: '/muscle-lab', label: 'Muscle Lab', icon: Flame },
-          { path: '/progress', label: 'Progress', icon: BarChart3 }
+          { path: "/dashboard", label: "Today", icon: BarChart3 },
+          { path: "/onboarding", label: "Setup", icon: ClipboardCheck },
+          { path: "/workouts", label: "Workouts", icon: Activity },
+          { path: "/muscle-lab", label: "Muscle Lab", icon: Flame },
+          { path: "/progress", label: "Progress", icon: BarChart3 },
         ]
-      : [])
-  ]
+      : []),
+  ];
+
+  const identityLabel = me?.firstName || me?.username || "Athlete";
 
   return (
-    <nav className="bg-[var(--bg-secondary)] border-b border-[var(--border)] sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-[var(--accent)] rounded-xl flex items-center justify-center">
-              <Dumbbell className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-[var(--text-primary)]">
-              {isLoggedIn && me ? `GymBro Lab · ${me?.firstName || me?.username}` : 'GymBro Lab'}
-            </span>
-          </Link>
+    <motion.nav
+      initial="hidden"
+      animate="visible"
+      variants={navVariants}
+      className="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8"
+    >
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[28px] border border-white/10 bg-[rgba(7,17,29,0.72)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+        <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5 lg:px-6">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+            <Link to="/" className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent)] text-white shadow-[0_14px_34px_rgba(255,107,44,0.28)]">
+                <Dumbbell className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="font-display text-lg font-bold text-[var(--text-primary)] sm:text-xl">
+                  GymBro Lab
+                </div>
+                <div className="hidden items-center gap-2 text-xs uppercase tracking-[0.24em] text-[var(--text-tertiary)] sm:flex">
+                  <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
+                  Precision fitness OS
+                </div>
+              </div>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1 lg:flex">
             {navItems.map((item) => {
-              const Icon = item.icon
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+
               return (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-colors duration-200 ${
-                    location.pathname === item.path
-                      ? 'bg-[var(--bg-tertiary)] text-[var(--accent)]'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
+                  className={`relative inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                    isActive
+                      ? "bg-[var(--accent)] text-white shadow-[0_14px_28px_rgba(255,107,44,0.24)]"
+                      : "text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{item.label}</span>
+                  <Icon className="h-4 w-4" />
+                  {item.label}
                 </Link>
-              )
+              );
             })}
           </div>
 
-          {/* Desktop Auth */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden items-center gap-3 lg:flex">
             {isLoggedIn ? (
-              <div className="flex items-center space-x-4">
+              <>
                 <Link
                   to="/account-settings"
-                  className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-colors duration-200"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition-colors duration-200 hover:bg-white/10"
                 >
-                  <User className="w-4 h-4" />
-                  <span className="font-medium">Account</span>
+                  <User className="h-4 w-4" />
+                  Account
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--error)] hover:bg-[var(--bg-tertiary)] transition-colors duration-200"
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-200 hover:bg-white/5 hover:text-[var(--error)]"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span className="font-medium">Logout</span>
+                  <LogOut className="h-4 w-4" />
+                  Logout
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="btn-secondary"
-                >
+              <>
+                <Link to="/login" className="btn-secondary px-5 py-2.5 text-sm">
                   Sign In
                 </Link>
-                <Link
-                  to="/register"
-                  className="btn-primary"
-                >
+                <Link to="/register" className="btn-primary px-5 py-2.5 text-sm">
                   Get Started
                 </Link>
-              </div>
+              </>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-200"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[var(--text-primary)] transition-colors duration-200 hover:bg-white/10 lg:hidden"
+            aria-label="Toggle navigation menu"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-[var(--border)]">
-            <div className="py-4 space-y-2">
-              {navItems.map((item) => {
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl mx-2 transition-colors duration-200 ${
-                      location.pathname === item.path
-                        ? 'bg-[var(--bg-tertiary)] text-[var(--accent)]'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                )
-              })}
-              
-              <div className="border-t border-[var(--border)] mt-4 pt-4">
-                {isLoggedIn ? (
-                  <div className="space-y-2 px-2">
-                    <Link
-                      to="/account-settings"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-200"
-                    >
-                      <User className="w-5 h-5" />
-                      <span className="font-medium">Account Settings</span>
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-xl text-[var(--text-secondary)] hover:text-[var(--error)] hover:bg-[var(--bg-tertiary)] transition-colors duration-200 w-full"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      <span className="font-medium">Logout</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2 px-2">
-                    <Link
-                      to="/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="btn-secondary w-full justify-center"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      to="/register"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="btn-primary w-full justify-center"
-                    >
-                      Get Started
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
-  )
-}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={menuVariants}
+              className="overflow-hidden border-t border-white/10 lg:hidden"
+            >
+              <div className="space-y-4 px-4 py-4 sm:px-5">
+                <div className="grid gap-2">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.path;
 
-export default Navbar
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors duration-200 ${
+                          isActive
+                            ? "bg-[var(--accent)] text-white"
+                            : "bg-white/5 text-[var(--text-secondary)] hover:bg-white/10 hover:text-[var(--text-primary)]"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="rounded-[24px] border border-white/10 bg-white/5 p-3">
+                  {isLoggedIn ? (
+                    <div className="space-y-3">
+                      <div className="px-2 text-sm text-[var(--text-secondary)]">
+                        Signed in as <span className="font-semibold text-[var(--text-primary)]">{identityLabel}</span>
+                      </div>
+                      <Link
+                        to="/account-settings"
+                        className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-primary)] transition-colors duration-200 hover:bg-white/10"
+                      >
+                        <User className="h-4 w-4" />
+                        Account Settings
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-200 hover:bg-white/10 hover:text-[var(--error)]"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3">
+                      <Link to="/login" className="btn-secondary w-full py-3 text-sm">
+                        Sign In
+                      </Link>
+                      <Link to="/register" className="btn-primary w-full py-3 text-sm">
+                        Get Started
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.nav>
+  );
+};
+
+export default Navbar;
