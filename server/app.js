@@ -1,9 +1,9 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
 const express = require("express");
 const connectdb = require("./config/db");
-const path = require("path");
 const cookieParser = require("cookie-parser");
-const AppError = require("./utils/appError");
 
 const userRoute = require("./routes/userRoutes");
 const foodRoutes = require("./routes/foodRoutes");
@@ -41,6 +41,7 @@ app.use((err, req, res, next) => {
 });
 
 //server
-app.listen(process.env.PORT, () => {
-  console.log(`server is running on ${process.env.PORT}`);
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log(`server is running on ${port}`);
 });

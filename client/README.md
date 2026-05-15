@@ -1,6 +1,6 @@
-# GymBro Frontend
+# GymBro Client
 
-A modern React frontend for the GymBro fitness tracking application.
+A modern React client for the GymBro fitness tracking application.
 
 ## Features
 
@@ -37,22 +37,22 @@ Make sure you have Node.js installed on your machine.
    npm run dev
    ```
 
-3. Start the frontend development server:
+3. Start the client development server:
    ```bash
-   npm run frontend:dev
+   npm run client:dev
    ```
 
-The frontend will be available at `http://localhost:3000`
+The client will be available at `http://localhost:3000`
 
 ## Available Scripts
 
-- `npm run frontend:dev` - Start development server
-- `npm run frontend:build` - Build for production
-- `npm run frontend:preview` - Preview production build
+- `npm run client:dev` - Start development server
+- `npm run client:build` - Build for production
+- `npm run client:preview` - Preview production build
 
 ## API Integration
 
-The frontend is configured to proxy API requests to the backend running on `http://localhost:5000`. All API endpoints are available under the `/api` prefix.
+The client is configured to proxy API requests to the backend running on `http://localhost:5000`. All API endpoints are available under the `/api` prefix.
 
 ### Authentication
 
@@ -82,4 +82,4 @@ The application uses Tailwind CSS for styling with a modern, clean design. Color
 
 ## Environment Variables
 
-No additional environment variables are needed for the frontend. The backend API URL is configured in the Vite config file.
+No additional environment variables are needed for the client. The backend API URL is configured in the Vite config file.
