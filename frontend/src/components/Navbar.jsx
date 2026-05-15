@@ -109,15 +109,15 @@ const Navbar = () => {
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[28px] border border-white/10 bg-[rgba(7,17,29,0.72)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
         <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5 lg:px-6">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-            <Link to="/" className="flex min-w-0 items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent)] text-white shadow-[0_14px_34px_rgba(255,107,44,0.28)]">
+            <Link to="/" className="flex items-center gap-3 sm:gap-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent)] text-white shadow-[0_14px_34px_rgba(255,107,44,0.28)]">
                 <Dumbbell className="h-5 w-5" />
               </div>
-              <div className="min-w-0">
-                <div className="font-display text-lg font-bold text-[var(--text-primary)] sm:text-xl">
+              <div className="flex min-w-0 flex-col justify-center leading-tight">
+                <div className="font-display whitespace-nowrap text-lg font-bold text-[var(--text-primary)] sm:text-xl">
                   GymBro Lab
                 </div>
-                <div className="hidden items-center gap-2 text-xs uppercase tracking-[0.24em] text-[var(--text-tertiary)] sm:flex">
+                <div className="hidden items-center gap-1.5 pt-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-tertiary)] xl:flex">
                   <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
                   Precision fitness OS
                 </div>
