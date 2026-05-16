@@ -1,22 +1,63 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BarChart3, CalendarCheck2, Flame, Trophy } from "lucide-react";
-import { getHealthState } from "../lib/healthStore";
+import { getHealthState, getWeeklyProgress } from "../lib/healthStore";
 import {
   loadNutritionSummary,
   loadOnboarding,
   loadWeeklyProgress,
 } from "../lib/healthApi";
 
+const getLast7Dates = () => {
+  const today = new Date();
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (6 - i));
+    return date.toISOString().slice(0, 10);
+  });
+};
+
+const normalizeWeeklyData = (data = []) => {
+  const rows = Array.isArray(data) ? data : [];
+
+  return getLast7Dates().map((date) => {
+    const match = rows.find((item) => item.date === date);
+
+    return {
+      date,
+      calories: Number(match?.calories || match?.totalCalories || 0),
+      workouts: Number(match?.workouts || match?.completedWorkouts || 0),
+    };
+  });
+};
+
+const mergeTodayCalories = (weeklyData, todayTotals) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const calories = Number(todayTotals?.calories || 0);
+
+  return weeklyData.map((day) =>
+    day.date === today
+      ? {
+          ...day,
+          calories: calories || day.calories,
+        }
+      : day,
+  );
+};
+
 const ProgressHub = () => {
   const [onboarding, setOnboarding] = useState(getHealthState().onboarding);
-  const [weekly, setWeekly] = useState([]);
+  const [weekly, setWeekly] = useState(normalizeWeeklyData(getWeeklyProgress()));
   const [today, setToday] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setWeekly(normalizeWeeklyData(getWeeklyProgress()));
+      setLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -29,9 +70,10 @@ const ProgressHub = () => {
         ]);
 
         if (profile) setOnboarding((prev) => ({ ...prev, ...profile }));
-        setWeekly(Array.isArray(weeklyData) ? weeklyData : []);
+        setWeekly(mergeTodayCalories(normalizeWeeklyData(weeklyData), todayTotals));
         setToday(todayTotals || { calories: 0, protein: 0, carbs: 0, fat: 0 });
       } catch {
+        setWeekly(normalizeWeeklyData(getWeeklyProgress()));
         setError("Failed to load progress data.");
       } finally {
         setLoading(false);
@@ -44,7 +86,7 @@ const ProgressHub = () => {
   const completedWorkouts = weekly.reduce((sum, day) => sum + Number(day.workouts || 0), 0);
   const adherence = weekly.filter((day) => day.workouts > 0).length;
 
-  const maxCalories = Math.max(1, ...weekly.map((day) => day.calories));
+  const maxCalories = Math.max(1, ...weekly.map((day) => Number(day.calories || 0)));
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] px-4 py-8">
@@ -90,14 +132,28 @@ const ProgressHub = () => {
 
             <div className="grid grid-cols-7 gap-3 items-end h-56">
               {weekly.map((day) => {
-                const height = Math.max(8, Math.round((day.calories / maxCalories) * 180));
+                const calories = Number(day.calories || 0);
+                const height = calories > 0
+                  ? Math.max(10, Math.round((calories / maxCalories) * 180))
+                  : 4;
+
                 return (
                   <div key={day.date} className="flex flex-col items-center gap-2">
-                    <div className="text-xs text-[var(--text-secondary)]">{Math.round(day.calories)}</div>
+                    <div className="text-xs text-[var(--text-secondary)]">{Math.round(calories)}</div>
                     <div
-                      className="w-full rounded-t-lg bg-[var(--accent)]/70"
-                      style={{ height: `${height}px` }}
-                      title={`${day.date}: ${Math.round(day.calories)} kcal`}
+                      className="w-full rounded-t-lg transition-all duration-300"
+                      style={{
+                        height: `${height}px`,
+                        background:
+                          calories > 0
+                            ? "linear-gradient(180deg, var(--accent-hover) 0%, var(--accent) 100%)"
+                            : "rgba(255, 107, 44, 0.18)",
+                        boxShadow:
+                          calories > 0
+                            ? "0 10px 24px rgba(255, 107, 44, 0.28)"
+                            : "none",
+                      }}
+                      title={`${day.date}: ${Math.round(calories)} kcal`}
                     />
                     <div className="text-[10px] text-[var(--text-secondary)]">{day.date.slice(5)}</div>
                   </div>
