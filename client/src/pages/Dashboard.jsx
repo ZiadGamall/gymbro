@@ -17,13 +17,13 @@ import {
 } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'
 import axios from 'axios'
-import { getPhase2State, getWeeklyProgress } from '../lib/phase2Store'
+import { getHealthState, getWeeklyProgress } from '../lib/healthStore'
 import {
   loadNutritionSummary,
   loadOnboarding,
   loadWorkoutSessions,
   loadWeeklyProgress,
-} from '../lib/phase2Api'
+} from '../lib/healthApi'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 22 },
@@ -54,7 +54,7 @@ const getDayLabel = (value) => {
 const Dashboard = () => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [phase2, setPhase2] = useState(getPhase2State())
+  const [healthState, setHealthState] = useState(getHealthState())
   const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 })
   const [completedToday, setCompletedToday] = useState(0)
   const [weeklyData, setWeeklyData] = useState([])
@@ -95,7 +95,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('token')
     if (!token) return
 
-    const fetchPhase2 = async () => {
+    const fetchHealthData = async () => {
       try {
         const today = new Date().toISOString().slice(0, 10)
         const [onboarding, todayTotals, todayWorkouts, weeklyProgress] = await Promise.all([
@@ -121,7 +121,7 @@ const Dashboard = () => {
         setWeeklyData(normalizedWeekly.length ? normalizedWeekly : getWeeklyProgress())
 
         if (onboarding) {
-          setPhase2((prev) => ({
+          setHealthState((prev) => ({
             ...prev,
             onboarding: {
               ...prev.onboarding,
@@ -131,21 +131,21 @@ const Dashboard = () => {
           }))
         }
       } catch {
-        setPhase2(getPhase2State())
+        setHealthState(getHealthState())
         setWeeklyData(getWeeklyProgress())
       }
     }
 
-    fetchPhase2()
+    fetchHealthData()
   }, [])
 
-  const onboardingDone = Boolean(phase2.onboarding.completed)
-  const calorieTarget = Number(phase2.onboarding.calorieTarget || 1)
-  const proteinTarget = Number(phase2.onboarding.proteinTarget || 1)
+  const onboardingDone = Boolean(healthState.onboarding.completed)
+  const calorieTarget = Number(healthState.onboarding.calorieTarget || 1)
+  const proteinTarget = Number(healthState.onboarding.proteinTarget || 1)
   const caloriesPercent = clamp(Math.round((Number(totals.calories || 0) / calorieTarget) * 100))
   const proteinPercent = clamp(Math.round((Number(totals.protein || 0) / proteinTarget) * 100))
   const workoutPercent = clamp(
-    Math.round((completedToday / Math.max(phase2.onboarding.activityDays || 1, 1)) * 100),
+    Math.round((completedToday / Math.max(healthState.onboarding.activityDays || 1, 1)) * 100),
   )
   const readinessScore = clamp(Math.round((caloriesPercent + proteinPercent + workoutPercent) / 3))
 

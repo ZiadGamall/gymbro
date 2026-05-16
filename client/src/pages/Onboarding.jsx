@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Target, Activity, UtensilsCrossed, ArrowRight, Sparkles } from "lucide-react";
-import { loadOnboarding, saveOnboarding } from "../lib/phase2Api";
+import { loadOnboarding, saveOnboarding } from "../lib/healthApi";
 
 const steps = [
   { id: 1, title: "Goal" },

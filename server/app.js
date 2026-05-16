@@ -7,7 +7,9 @@ const cookieParser = require("cookie-parser");
 
 const userRoute = require("./routes/userRoutes");
 const foodRoutes = require("./routes/foodRoutes");
-const phase2Routes = require("./routes/phase2Routes");
+const onboardingRoutes = require("./routes/onboardingRoutes");
+const nutritionRoutes = require("./routes/nutritionRoutes");
+const workoutRoutes = require("./routes/workoutRoutes");
 
 const cors = require("cors");
 const app = express();
@@ -24,7 +26,9 @@ app.use("/upload", express.static(path.join(__dirname, "uploads")));
 //routes
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/food", foodRoutes);
-app.use("/api/v1/phase2", phase2Routes);
+app.use("/api/v1/onboarding", onboardingRoutes);
+app.use("/api/v1/nutrition", nutritionRoutes);
+app.use("/api/v1/workouts", workoutRoutes);
 app.get("/", (req, res) => {
   res.send("API is running");
 });
