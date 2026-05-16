@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle2, Circle, Dumbbell, Plus, Trash2 } from "lucide-react";
-import { getPhase2State } from "../lib/phase2Store";
+import { getHealthState } from "../lib/healthStore";
 import {
   addWorkoutSessionApi,
   deleteWorkoutSessionApi,
   loadOnboarding,
   loadWorkoutSessions,
   toggleWorkoutSessionApi,
-} from "../lib/phase2Api";
+} from "../lib/healthApi";
 
 const templates = {
   beginner: [
@@ -25,7 +25,7 @@ const templates = {
 
 const WorkoutPlanner = () => {
   const [sessions, setSessions] = useState([]);
-  const [level, setLevel] = useState(getPhase2State().onboarding.level || "beginner");
+  const [level, setLevel] = useState(getHealthState().onboarding.level || "beginner");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 

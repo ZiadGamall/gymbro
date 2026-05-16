@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, CalendarCheck2, Flame, Trophy } from "lucide-react";
-import { getPhase2State } from "../lib/phase2Store";
+import { getHealthState } from "../lib/healthStore";
 import {
   loadNutritionSummary,
   loadOnboarding,
   loadWeeklyProgress,
-} from "../lib/phase2Api";
+} from "../lib/healthApi";
 
 const ProgressHub = () => {
-  const [onboarding, setOnboarding] = useState(getPhase2State().onboarding);
+  const [onboarding, setOnboarding] = useState(getHealthState().onboarding);
   const [weekly, setWeekly] = useState([]);
   const [today, setToday] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [loading, setLoading] = useState(true);

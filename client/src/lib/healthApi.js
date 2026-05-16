@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getPhase2State, savePhase2State } from "./phase2Store";
+import { getHealthState, saveHealthState } from "./healthStore";
 
 const authHeaders = () => {
   const token = localStorage.getItem("token");
@@ -12,13 +12,13 @@ const authHeaders = () => {
 
 export async function loadOnboarding() {
   try {
-    const res = await axios.get("/api/v1/phase2/onboarding", {
+    const res = await axios.get("/api/v1/onboarding", {
       headers: authHeaders(),
     });
     const onboarding = res?.data?.data?.onboarding;
     if (onboarding) {
-      const local = getPhase2State();
-      savePhase2State({
+      const local = getHealthState();
+      saveHealthState({
         ...local,
         onboarding: {
           ...local.onboarding,
@@ -29,18 +29,18 @@ export async function loadOnboarding() {
     }
     return onboarding || null;
   } catch {
-    const local = getPhase2State();
+    const local = getHealthState();
     return local.onboarding?.completed ? local.onboarding : null;
   }
 }
 
 export async function saveOnboarding(form) {
-  const res = await axios.put("/api/v1/phase2/onboarding", form, {
+  const res = await axios.put("/api/v1/onboarding", form, {
     headers: authHeaders(),
   });
   const onboarding = res?.data?.data?.onboarding;
-  const local = getPhase2State();
-  savePhase2State({
+  const local = getHealthState();
+  saveHealthState({
     ...local,
     onboarding: {
       ...local.onboarding,
@@ -53,7 +53,7 @@ export async function saveOnboarding(form) {
 }
 
 export async function loadNutritionEntries(date) {
-  const res = await axios.get("/api/v1/phase2/nutrition-entries", {
+  const res = await axios.get("/api/v1/nutrition/entries", {
     params: { date },
     headers: authHeaders(),
   });
@@ -61,20 +61,20 @@ export async function loadNutritionEntries(date) {
 }
 
 export async function addNutritionEntryApi(payload) {
-  const res = await axios.post("/api/v1/phase2/nutrition-entries", payload, {
+  const res = await axios.post("/api/v1/nutrition/entries", payload, {
     headers: authHeaders(),
   });
   return res?.data?.data?.entry;
 }
 
 export async function deleteNutritionEntryApi(id) {
-  await axios.delete(`/api/v1/phase2/nutrition-entries/${id}`, {
+  await axios.delete(`/api/v1/nutrition/entries/${id}`, {
     headers: authHeaders(),
   });
 }
 
 export async function loadNutritionSummary(date) {
-  const res = await axios.get("/api/v1/phase2/nutrition-summary/today", {
+  const res = await axios.get("/api/v1/nutrition/summary/today", {
     params: { date },
     headers: authHeaders(),
   });
@@ -82,7 +82,7 @@ export async function loadNutritionSummary(date) {
 }
 
 export async function loadWorkoutSessions(date) {
-  const res = await axios.get("/api/v1/phase2/workout-sessions", {
+  const res = await axios.get("/api/v1/workouts/sessions", {
     params: { date },
     headers: authHeaders(),
   });
@@ -90,27 +90,27 @@ export async function loadWorkoutSessions(date) {
 }
 
 export async function addWorkoutSessionApi(payload) {
-  const res = await axios.post("/api/v1/phase2/workout-sessions", payload, {
+  const res = await axios.post("/api/v1/workouts/sessions", payload, {
     headers: authHeaders(),
   });
   return res?.data?.data?.session;
 }
 
 export async function toggleWorkoutSessionApi(id) {
-  const res = await axios.patch(`/api/v1/phase2/workout-sessions/${id}/toggle`, null, {
+  const res = await axios.patch(`/api/v1/workouts/sessions/${id}/toggle`, null, {
     headers: authHeaders(),
   });
   return res?.data?.data?.session;
 }
 
 export async function deleteWorkoutSessionApi(id) {
-  await axios.delete(`/api/v1/phase2/workout-sessions/${id}`, {
+  await axios.delete(`/api/v1/workouts/sessions/${id}`, {
     headers: authHeaders(),
   });
 }
 
 export async function loadWeeklyProgress() {
-  const res = await axios.get("/api/v1/phase2/progress/weekly", {
+  const res = await axios.get("/api/v1/workouts/progress/weekly", {
     headers: authHeaders(),
   });
   return res?.data?.data?.progress || [];

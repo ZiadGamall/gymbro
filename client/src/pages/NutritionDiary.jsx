@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Trash2, Plus, Flame, Beef, Wheat, Droplets } from "lucide-react";
-import { getPhase2State } from "../lib/phase2Store";
+import { getHealthState } from "../lib/healthStore";
 import {
   addNutritionEntryApi,
   deleteNutritionEntryApi,
   loadNutritionEntries,
   loadNutritionSummary,
   loadOnboarding,
-} from "../lib/phase2Api";
+} from "../lib/healthApi";
 
 const mealOptions = ["breakfast", "lunch", "dinner", "snack"];
 
 const NutritionDiary = () => {
   const today = new Date().toISOString().slice(0, 10);
-  const [targets, setTargets] = useState(getPhase2State().onboarding);
+  const [targets, setTargets] = useState(getHealthState().onboarding);
   const [entries, setEntries] = useState([]);
   const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [loading, setLoading] = useState(true);

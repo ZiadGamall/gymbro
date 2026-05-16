@@ -1,4 +1,4 @@
-const STORE_KEY = "gymbro.phase2.v1";
+const STORE_KEY = "gymbro.health.v1";
 
 const defaultState = {
   onboarding: {
@@ -52,16 +52,16 @@ function parseOrDefault(raw) {
   }
 }
 
-export function getPhase2State() {
+export function getHealthState() {
   return parseOrDefault(localStorage.getItem(STORE_KEY));
 }
 
-export function savePhase2State(nextState) {
+export function saveHealthState(nextState) {
   localStorage.setItem(STORE_KEY, JSON.stringify(nextState));
 }
 
 export function updateOnboarding(payload) {
-  const state = getPhase2State();
+  const state = getHealthState();
   const nextState = {
     ...state,
     onboarding: {
@@ -71,12 +71,12 @@ export function updateOnboarding(payload) {
       completedAt: nowIso(),
     },
   };
-  savePhase2State(nextState);
+  saveHealthState(nextState);
   return nextState.onboarding;
 }
 
 export function addNutritionEntry(entry) {
-  const state = getPhase2State();
+  const state = getHealthState();
   const nextEntry = {
     id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
     date: todayDate(),
@@ -97,12 +97,12 @@ export function addNutritionEntry(entry) {
     },
   };
 
-  savePhase2State(nextState);
+  saveHealthState(nextState);
   return nextEntry;
 }
 
 export function deleteNutritionEntry(id) {
-  const state = getPhase2State();
+  const state = getHealthState();
   const nextState = {
     ...state,
     nutrition: {
@@ -110,11 +110,11 @@ export function deleteNutritionEntry(id) {
       entries: state.nutrition.entries.filter((entry) => entry.id !== id),
     },
   };
-  savePhase2State(nextState);
+  saveHealthState(nextState);
 }
 
 export function addWorkoutSession(session) {
-  const state = getPhase2State();
+  const state = getHealthState();
   const nextSession = {
     id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
     date: todayDate(),
@@ -134,12 +134,12 @@ export function addWorkoutSession(session) {
     },
   };
 
-  savePhase2State(nextState);
+  saveHealthState(nextState);
   return nextSession;
 }
 
 export function toggleWorkoutCompleted(id) {
-  const state = getPhase2State();
+  const state = getHealthState();
   const nextState = {
     ...state,
     workouts: {
@@ -151,11 +151,11 @@ export function toggleWorkoutCompleted(id) {
       ),
     },
   };
-  savePhase2State(nextState);
+  saveHealthState(nextState);
 }
 
 export function deleteWorkoutSession(id) {
-  const state = getPhase2State();
+  const state = getHealthState();
   const nextState = {
     ...state,
     workouts: {
@@ -163,11 +163,11 @@ export function deleteWorkoutSession(id) {
       sessions: state.workouts.sessions.filter((session) => session.id !== id),
     },
   };
-  savePhase2State(nextState);
+  saveHealthState(nextState);
 }
 
 export function getTodayNutritionTotals() {
-  const state = getPhase2State();
+  const state = getHealthState();
   const date = todayDate();
   return state.nutrition.entries
     .filter((entry) => entry.date === date)
@@ -184,7 +184,7 @@ export function getTodayNutritionTotals() {
 }
 
 export function getWeeklyProgress() {
-  const state = getPhase2State();
+  const state = getHealthState();
   const today = new Date();
   const last7 = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
