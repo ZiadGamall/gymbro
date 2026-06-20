@@ -159,6 +159,7 @@ const generateFitbotResponse = async (user, history = [], message) => {
     });
 
     responseMessage = response.choices[0].message;
+    console.log("Response Message: ", responseMessage)
 
     // If Groq just wants to speak normally without tools, break the loop
     if (!responseMessage.tool_calls) {
@@ -171,6 +172,7 @@ const generateFitbotResponse = async (user, history = [], message) => {
 
     // Execute requested tools sequentially or in parallel
     for (const toolCall of responseMessage.tool_calls) {
+      console.log("Tool Call: ", toolCall)
       const functionName = toolCall.function.name;
       const functionArgs = JSON.parse(toolCall.function.arguments);
       let functionResult;

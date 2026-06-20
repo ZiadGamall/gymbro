@@ -4,6 +4,10 @@ const workoutSchema = mongoose.Schema(
   {
     name: { type: String, default: "Custom Workout" },
     numberOfExercises: { type: Number, required: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     exercises: [
       {
         exerciseId: {
