@@ -5,13 +5,15 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const buildSystemPrompt = (user) => {
   const limitations = user.limitations || "None";
 
+  console.log("Build system: ", user);
+
   return `
 You are FitBot, an expert AI fitness trainer and nutritionist
 built into a gym management app. You are knowledgeable,
 motivating, and always prioritize the user's safety.
 
 User context:
-- Name: ${user.name}
+- Name: ${user.firstName}
 - Age: ${user.age}
 - Fitness goal: ${user.goal}
 - Experience level: ${user.experience}
@@ -40,6 +42,8 @@ Output format:
 };
 
 const generateFitbotResponse = async (user, history = [], message) => {
+  console.log("generatefitbot: ", user);
+
   const systemPrompt = buildSystemPrompt(user);
 
   const messages = [
@@ -53,6 +57,8 @@ const generateFitbotResponse = async (user, history = [], message) => {
     messages,
     max_tokens: 1024,
   });
+
+  console.log(response.choices);
 
   return response.choices[0].message.content;
 };
