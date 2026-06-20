@@ -9,8 +9,9 @@ const userRoute = require("./routes/userRoutes");
 const foodRoutes = require("./routes/foodRoutes");
 const onboardingRoutes = require("./routes/onboardingRoutes");
 const nutritionRoutes = require("./routes/nutritionRoutes");
-const workoutRoutes = require("./routes/workoutRoutes");
+const workoutSessionRoutes = require("./routes/workoutSessionRoutes");
 const fitbotRoutes = require("./routes/fitbotRoutes");
+const workoutRoutes = require("./routes/workoutRoutes");
 
 const cors = require("cors");
 const app = express();
@@ -29,8 +30,10 @@ app.use("/api/v1/users", userRoute);
 app.use("/api/v1/food", foodRoutes);
 app.use("/api/v1/onboarding", onboardingRoutes);
 app.use("/api/v1/nutrition", nutritionRoutes);
-app.use("/api/v1/workouts", workoutRoutes);
+app.use("/api/v1/workout-session", workoutSessionRoutes);
 app.use("/api/v1/fitbot", fitbotRoutes);
+app.use("/api/v1/workouts", workoutRoutes);
+
 app.get("/", (req, res) => {
   res.send("API is running");
 });
