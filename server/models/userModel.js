@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const crypto = require("crypto");
+const workout = require("./WorkoutModel");
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -52,7 +53,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  workoutList: Array,
+  workoutList: [{ type: mongoose.Schema.Types.ObjectId, ref: workout }],
 
   verifyToken: String,
   passwordChangedAt: Date,

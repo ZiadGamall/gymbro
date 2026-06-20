@@ -1,19 +1,19 @@
-const { log } = require("console");
+// controllers/fitbotController.js
 const { generateFitbotResponse } = require("../services/fitbot.service");
-const User = require("../models/UserModel");
 
 const chatWithFitbot = async (req, res) => {
+  // req.user comes from your 'protect' middleware and has the Mongoose _id
   const user = req.user;
-
   const { history = [], message } = req.body;
 
   if (!user || !message) {
     return res.status(400).json({
-      error: "Missing user or message",
+      error: "Missing user context or message",
     });
   }
 
   try {
+    // Pass the complete user object through to the service loop
     const reply = await generateFitbotResponse(user, history, message);
 
     return res.status(200).json({
