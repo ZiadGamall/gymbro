@@ -1,11 +1,10 @@
 const { log } = require("console");
-const { findOne, findById } = require("../models/userModel.js");
-const { generateFitbotResponse } = require("../services/fitbot.service.js");
-const User = require("../models/userModel");
+const { generateFitbotResponse } = require("../services/fitbot.service");
+const User = require("../models/UserModel");
 
 const chatWithFitbot = async (req, res) => {
   const user = req.user;
-  
+
   const { history = [], message } = req.body;
 
   if (!user || !message) {

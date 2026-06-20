@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  workoutList: Array,
 
   verifyToken: String,
   passwordChangedAt: Date,
