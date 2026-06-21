@@ -1,29 +1,13 @@
 const express = require("express");
-const authController = require("../controllers/authController");
 const workoutController = require("../controllers/workoutController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
-router
-  .route("/sessions")
-  .get(authController.protect, workoutController.getWorkoutSessions)
-  .post(authController.protect, workoutController.addWorkoutSession);
-
-router.patch(
-  "/sessions/:id/toggle",
+router.post(
+  "/create-workout",
   authController.protect,
-  workoutController.toggleWorkoutCompleted,
-);
-router.delete(
-  "/sessions/:id",
-  authController.protect,
-  workoutController.deleteWorkoutSession,
-);
-
-router.get(
-  "/progress/weekly",
-  authController.protect,
-  workoutController.getWeeklyProgress,
+  workoutController.createWorkout,
 );
 
 module.exports = router;
