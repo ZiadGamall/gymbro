@@ -13,6 +13,7 @@ const workoutSessionRoutes = require("./routes/workoutSessionRoutes");
 const fitbotRoutes = require("./routes/fitbotRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
 const exerciseRoutes = require("./routes/exerciseRoutes");
+const calorieRoutes = require('./routes/calorieRoutes');
 
 const cors = require("cors");
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/v1/workout-session", workoutSessionRoutes);
 app.use("/api/v1/fitbot", fitbotRoutes);
 app.use("/api/v1/workouts", workoutRoutes);
 app.use("/api/exercises", exerciseRoutes);
+app.use('/api/calories', calorieRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running");
