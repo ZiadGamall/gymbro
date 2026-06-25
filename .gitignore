@@ -7,8 +7,9 @@ build/
 server/.env
 server/uploads/
 # Python environment and cache files
-ai-services/form-checker/venv/
-ai-services/form-checker/__pycache__/
+venv/
+__pycache__/
+*.pyc
 ai-services/form-checker/processed_outputs
 ai-services/form-checker/temp_videos
 *.mp4
