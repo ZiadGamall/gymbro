@@ -13,14 +13,14 @@ const workoutSessionRoutes = require("./routes/workoutSessionRoutes");
 const fitbotRoutes = require("./routes/fitbotRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
 const exerciseRoutes = require("./routes/exerciseRoutes");
-const calorieRoutes = require('./routes/calorieRoutes');
+const calorieRoutes = require("./routes/calorieRoutes");
+const formCheckRoutes = require("./routes/formCheckRoutes");
 
 const cors = require("cors");
 const app = express();
 
 //connect DB
 connectdb();
-
 //middlewares
 app.use(cors());
 app.use(express.json());
@@ -35,8 +35,9 @@ app.use("/api/v1/nutrition", nutritionRoutes);
 app.use("/api/v1/workout-session", workoutSessionRoutes);
 app.use("/api/v1/fitbot", fitbotRoutes);
 app.use("/api/v1/workouts", workoutRoutes);
-app.use("/api/exercises", exerciseRoutes);
-app.use('/api/calories', calorieRoutes);
+app.use("/api/v1/exercises", exerciseRoutes);
+app.use("/api/v1/calories", calorieRoutes);
+app.use("/api/v1/form-check", formCheckRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running");
