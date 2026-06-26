@@ -4,22 +4,20 @@ const workoutSessionController = require("../controllers/workoutSessionControlle
 
 const router = express.Router();
 
+// Get history of sessions or save a new completed Excel-style grid log
 router
   .route("/sessions")
   .get(authController.protect, workoutSessionController.getWorkoutSessions)
   .post(authController.protect, workoutSessionController.addWorkoutSession);
 
-router.patch(
-  "/sessions/:id/toggle",
-  authController.protect,
-  workoutSessionController.toggleWorkoutCompleted,
-);
+// Delete an erroneous workout session log
 router.delete(
   "/sessions/:id",
   authController.protect,
   workoutSessionController.deleteWorkoutSession,
 );
 
+// Get analytics data for the 7-day dashboard preview
 router.get(
   "/progress/weekly",
   authController.protect,
