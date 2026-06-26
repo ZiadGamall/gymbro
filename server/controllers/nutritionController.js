@@ -1,67 +1,27 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const MealEntry = require("../models/MealEntryModel");
+const factory = require("./handlerFactory");
 
 const getToday = () => new Date().toISOString().slice(0, 10);
 
-exports.getMealEntries = catchAsync(async (req, res) => {
-  const date = req.query.date || getToday();
+// Basic CRUD operations powered by factory
+exports.getMealEntries = factory.getAllFieldFilter(MealEntry);
+exports.deleteMealEntry = factory.deleteOne(MealEntry);
 
-  const entries = await MealEntry.find({ user: req.user.id, date }).sort({
-    createdAt: -1,
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      count: entries.length,
-      entries,
-    },
-  });
-});
-
+// Custom validation wrapper around factory creation
 exports.addMealEntry = catchAsync(async (req, res, next) => {
-  const { mealType, foodName, calories, protein, carbs, fat, date } = req.body;
-
-  if (!foodName || !foodName.trim()) {
+  if (!req.body.foodName || !req.body.foodName.trim()) {
     return next(new AppError("Food name is required", 400));
   }
+  
+  if (!req.body.date) req.body.date = getToday();
 
-  const entry = await MealEntry.create({
-    user: req.user.id,
-    date: date || getToday(),
-    mealType,
-    foodName,
-    calories,
-    protein,
-    carbs,
-    fat,
-  });
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      entry,
-    },
-  });
+  // Forward sanitized data execution to factory wrapper
+  return factory.createOne(MealEntry)(req, res, next);
 });
 
-exports.deleteMealEntry = catchAsync(async (req, res, next) => {
-  const entry = await MealEntry.findOneAndDelete({
-    _id: req.params.id,
-    user: req.user.id,
-  });
-
-  if (!entry) {
-    return next(new AppError("Meal entry not found", 404));
-  }
-
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
-
+// Keeping complex calculation logic separate and custom
 exports.getNutritionSummaryToday = catchAsync(async (req, res) => {
   const date = req.query.date || getToday();
 

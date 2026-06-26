@@ -1,6 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const OnboardingProfile = require("../models/OnboardingProfileModel");
 
+// Streamlined read handler using core query targeting
 exports.getOnboarding = catchAsync(async (req, res) => {
   const profile = await OnboardingProfile.findOne({ user: req.user.id });
 
@@ -12,6 +13,7 @@ exports.getOnboarding = catchAsync(async (req, res) => {
   });
 });
 
+// Custom properties allowlist logic remains isolated safely
 exports.upsertOnboarding = catchAsync(async (req, res) => {
   const allowed = [
     "goal",

@@ -3,6 +3,7 @@ const appError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const fs = require("fs");
 const path = require("path");
+const factory = require("./handlerFactory");
 
 // Helper function to filter allowed fields for update
 const filterObj = (obj) => {
@@ -117,19 +118,4 @@ exports.getMe = (req, res, next) => {
   next();
 };
 
-exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id).select(
-    "+dateOfBirth +height +weight",
-  );
-
-  if (!user) {
-    return next(new appError("User not found", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
-});
+exports.getUser = factory.getOne(User);

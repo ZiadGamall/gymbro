@@ -8,40 +8,39 @@ const workoutSessionSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    workoutId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Workout",
+    },
+    workoutName: {
+      type: String,
+      default: "Manual Workout",
+    },
     date: {
-      type: String,
-      required: true,
-      index: true,
+      type: Date,
+      default: Date.now,
     },
-    planName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    durationMin: {
+    duration: {
       type: Number,
-      default: 30,
-      min: 0,
+      required: true,
     },
-    intensity: {
-      type: String,
-      enum: ["light", "moderate", "high"],
-      default: "moderate",
-    },
-    completed: {
-      type: Boolean,
-      default: false,
-    },
-    notes: {
-      type: String,
-      default: "",
-    },
+    exercises: [
+      {
+        exerciseId: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" },
+        name: { type: String },
+        sets: [
+          {
+            setNumber: { type: Number, required: true },
+            weight: { type: Number, required: true },
+            reps: { type: Number, required: true },
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true },
 );
 
 workoutSessionSchema.index({ user: 1, date: 1, createdAt: -1 });
 
-module.exports =
-  mongoose.models.WorkoutSession ||
-  mongoose.model("WorkoutSession", workoutSessionSchema);
+module.exports = mongoose.model("WorkoutSession", workoutSessionSchema);
