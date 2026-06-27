@@ -44,6 +44,7 @@ exports.register = catchAsync(async (req, res, next) => {
     dateOfBirth,
     height,
     weight,
+    gender,
   } = req.body;
 
   const newUser = await User.create({
@@ -57,6 +58,7 @@ exports.register = catchAsync(async (req, res, next) => {
     dateOfBirth,
     height,
     weight,
+    gender,
   });
 
   const url = `${req.protocol}://${req.get("host")}/api/v1/users/verify/${newUser.verifyToken}`;

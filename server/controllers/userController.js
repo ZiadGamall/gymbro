@@ -15,6 +15,7 @@ const filterObj = (obj) => {
     "height",
     "weight",
     "dateOfBirth",
+    "gender",
   ];
   const newObj = {};
   Object.keys(obj).forEach((el) => {
