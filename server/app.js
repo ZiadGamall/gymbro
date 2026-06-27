@@ -15,6 +15,7 @@ const workoutRoutes = require("./routes/workoutRoutes");
 const exerciseRoutes = require("./routes/exerciseRoutes");
 const calorieRoutes = require("./routes/calorieRoutes");
 const formCheckRoutes = require("./routes/formCheckRoutes");
+const recoveryRoutes = require("./routes/recoveryRoutes");
 
 const cors = require("cors");
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/v1/workouts", workoutRoutes);
 app.use("/api/v1/exercises", exerciseRoutes);
 app.use("/api/v1/calories", calorieRoutes);
 app.use("/api/v1/form-check", formCheckRoutes);
+app.use("/api/v1/status", recoveryRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running");
