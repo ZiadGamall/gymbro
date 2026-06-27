@@ -1,7 +1,6 @@
 const Food = require("../models/FoodModel");
 const appError = require("../utils/appError");
 
-// POST /api/food/search
 exports.getFoodByName = async (req, res, next) => {
   try {
     const { name } = req.body;
@@ -10,23 +9,29 @@ exports.getFoodByName = async (req, res, next) => {
       return next(new appError("Food name is required", 400));
     }
 
-    const results = await Food.find(
-      { food: { $regex: escapeRegex(name.trim()), $options: "i" } },
-      { _id: 0 },
-    ).lean();
+    const results = await Food.find({
+      food: { $regex: escapeRegex(name.trim()), $options: "i" },
+    }).lean();
 
     if (results.length === 0) {
       return next(new appError("No food items found", 404));
     }
 
-    res
-      .status(200)
-      .json({
-        status: "success",
-        data: { count: results.length, data: results },
-      });
+    // Map fields assuming your underlying Food database quantities represent values per 100g
+    const formattedResults = results.map((item) => ({
+      foodId: item._id,
+      foodName: item.food,
+      caloriesPer100g: item.nutrients?.calories?.amount || 0,
+      proteinPer100g: item.nutrients?.protein?.amount || 0,
+      carbsPer100g: item.nutrients?.carbohydrates?.amount || 0,
+      fatPer100g: item.nutrients?.total_fat?.amount || 0,
+    }));
+
+    res.status(200).json({
+      status: "success",
+      data: { count: formattedResults.length, data: formattedResults },
+    });
   } catch (err) {
-    console.error("getFoodByName error:", err);
     next(new appError(err.message, 500));
   }
 };
@@ -45,12 +50,10 @@ exports.getAllFood = async (req, res, next) => {
       return next(new appError("No food items found", 404));
     }
 
-    res
-      .status(200)
-      .json({
-        status: "success",
-        data: { count: results.length, data: results },
-      });
+    res.status(200).json({
+      status: "success",
+      data: { count: results.length, data: results },
+    });
   } catch (err) {
     console.error("getAllFood error:", err);
     next(new appError(err.message, 500));

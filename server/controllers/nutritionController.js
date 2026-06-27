@@ -1,6 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const MealEntry = require("../models/MealEntryModel");
+const Food = require("../models/FoodModel");
 const factory = require("./handlerFactory");
 
 const getToday = () => new Date().toISOString().slice(0, 10);
@@ -9,16 +10,55 @@ const getToday = () => new Date().toISOString().slice(0, 10);
 exports.getMealEntries = factory.getAllFieldFilter(MealEntry);
 exports.deleteMealEntry = factory.deleteOne(MealEntry);
 
-// Custom validation wrapper around factory creation
 exports.addMealEntry = catchAsync(async (req, res, next) => {
-  if (!req.body.foodName || !req.body.foodName.trim()) {
-    return next(new AppError("Food name is required", 400));
-  }
-  
-  if (!req.body.date) req.body.date = getToday();
+  const { foodId, weightConsumed, mealType, date } = req.body;
 
-  // Forward sanitized data execution to factory wrapper
-  return factory.createOne(MealEntry)(req, res, next);
+  // 1. Ensure basic input validation
+  if (!foodId) {
+    return next(new AppError("Food ID is required to log an item.", 400));
+  }
+  if (!weightConsumed || weightConsumed <= 0) {
+    return next(new AppError("Please provide a valid weight in grams.", 400));
+  }
+
+  // 2. Fetch the base nutrients directly from your official Food collection
+  const foodItem = await Food.findById(foodId);
+  if (!foodItem) {
+    return next(new AppError("Food item not found in database.", 404));
+  }
+
+  // 3. Extract base values per 100g from your NutrientsSchema structure
+  const caloriesPer100g = foodItem.nutrients?.calories?.amount || 0;
+  const proteinPer100g = foodItem.nutrients?.protein?.amount || 0;
+  const carbsPer100g = foodItem.nutrients?.carbohydrates?.amount || 0;
+  const fatPer100g = foodItem.nutrients?.total_fat?.amount || 0;
+
+  // 4. Run the math scale factor (User Weight / 100g)
+  const scaleFactor = weightConsumed / 100;
+
+  const calculatedCalories = Math.round(caloriesPer100g * scaleFactor);
+  const calculatedProtein = Math.round(proteinPer100g * scaleFactor * 10) / 10;
+  const calculatedCarbs = Math.round(carbsPer100g * scaleFactor * 10) / 10;
+  const calculatedFat = Math.round(fatPer100g * scaleFactor * 10) / 10;
+
+  // 5. Create the final MealEntry log
+  const newMealEntry = await MealEntry.create({
+    user: req.user.id,
+    date: date || new Date().toISOString().slice(0, 10),
+    mealType: mealType || "snack",
+    foodName: `${foodItem.food} (${weightConsumed}g)`,
+    calories: calculatedCalories,
+    protein: calculatedProtein,
+    carbs: calculatedCarbs,
+    fat: calculatedFat,
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      mealEntry: newMealEntry,
+    },
+  });
 });
 
 // Keeping complex calculation logic separate and custom

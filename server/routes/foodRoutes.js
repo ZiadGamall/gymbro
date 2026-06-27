@@ -1,5 +1,5 @@
 const express = require("express");
-const foodController = require("../controllers/foodControllers");
+const foodController = require("../controllers/foodController");
 
 const router = express.Router();
 

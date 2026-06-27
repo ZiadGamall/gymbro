@@ -16,6 +16,7 @@ const mealEntrySchema = new mongoose.Schema(
     mealType: {
       type: String,
       enum: ["breakfast", "lunch", "dinner", "snack"],
+      lowercase: true,
       default: "snack",
     },
     foodName: {
