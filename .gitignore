@@ -6,6 +6,7 @@ build/
 .env
 server/.env
 server/uploads/
+data/
 # Python environment and cache files
 venv/
 __pycache__/

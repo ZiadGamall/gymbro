@@ -13,7 +13,7 @@ exports.searchExercisesLogic = async (searchTerm) => {
     ]
   })
   // Select the fields the LLM needs to make its decision
-  .select("name bodyPart target _id") 
+  .select("name bodyPart target id") 
   .limit(15)
   .lean();
 };

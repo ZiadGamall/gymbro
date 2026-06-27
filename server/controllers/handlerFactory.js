@@ -1,18 +1,20 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-// Delete One Document (Restricted to Owner)
+// Delete One Document (Restricted to Owner if user field exists)
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findOneAndDelete({
-      _id: req.params.id,
-      user: req.user.id, // Ensures users can only delete their own data
-    });
+    // Check if the model's schema has a 'user' field
+    const hasUserField = Model.schema.paths.user;
+    const filter = { _id: req.params.id };
+    if (hasUserField && req.user) filter.user = req.user.id;
+
+    const doc = await Model.findOneAndDelete(filter);
 
     if (!doc) {
       return next(
         new AppError(
-          "No document found with that ID associated with this user",
+          "No document found with that ID or you do not have permission to delete it",
           404,
         ),
       );
@@ -24,10 +26,15 @@ exports.deleteOne = (Model) =>
     });
   });
 
-// Create One Document (Automatically links to logged-in user)
+// Create One Document (Automatically links to logged-in user if applicable)
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const payload = { ...req.body, user: req.user.id };
+    const payload = { ...req.body };
+    // Only append user if the model expects it
+    if (Model.schema.paths.user && req.user) {
+      payload.user = req.user.id;
+    }
+
     const doc = await Model.create(payload);
 
     res.status(201).json({
@@ -36,10 +43,14 @@ exports.createOne = (Model) =>
     });
   });
 
-// Get One Document by ID (Restricted to Owner)
+// Get One Document by ID (Restricted to Owner if user field exists)
 exports.getOne = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
-    let query = Model.findOne({ _id: req.params.id, user: req.user.id });
+    const hasUserField = Model.schema.paths.user;
+    const filter = { _id: req.params.id };
+    if (hasUserField && req.user) filter.user = req.user.id;
+
+    let query = Model.findOne(filter);
     if (popOptions) query = query.populate(popOptions);
 
     const doc = await query;
@@ -54,13 +65,20 @@ exports.getOne = (Model, popOptions) =>
     });
   });
 
-// Get All Documents for the logged-in user (with optional filtering)
-exports.getAllFieldFilter = (Model) =>
+// Get All Documents (with optional filtering)
+exports.getAllFieldFilter = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
-    // Build filter based on logged-in user and any extra query params (like date)
-    const filter = { user: req.user.id, ...req.query };
+    const filter = { ...req.query };
+    if (Model.schema.paths.user && req.user) {
+      filter.user = req.user.id;
+    }
 
-    const docs = await Model.find(filter).sort({ createdAt: -1 });
+    let query = Model.find(filter).sort({ createdAt: -1 });
+
+    // Dynamically apply population options if they are passed in!
+    if (popOptions) query = query.populate(popOptions);
+
+    const docs = await query;
 
     res.status(200).json({
       status: "success",

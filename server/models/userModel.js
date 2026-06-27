@@ -64,6 +64,12 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   workoutList: [{ type: mongoose.Schema.Types.ObjectId, ref: workout }],
+  savedSplits: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Split",
+    },
+  ],
 
   verifyToken: String,
   passwordChangedAt: Date,

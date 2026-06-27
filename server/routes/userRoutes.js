@@ -43,4 +43,8 @@ router.get(
   userController.getMe,
   userController.getUser,
 );
+
+// Logout
+router.get("/logout", authController.protect, authController.logout);
+
 module.exports = router;
