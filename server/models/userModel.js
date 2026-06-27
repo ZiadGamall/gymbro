@@ -26,6 +26,15 @@ const userSchema = new mongoose.Schema({
   height: Number,
   weight: Number,
 
+  gender: {
+    type: String,
+    enum: {
+      values: ["Male", "Female"],
+      message: "Gender must be either Male or Female",
+    },
+    required: [true, "Please provide your gender"],
+  },
+
   password: {
     type: String,
     required: [true, "Please provide a password"],
