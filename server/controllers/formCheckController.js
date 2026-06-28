@@ -1,6 +1,16 @@
 const formCheckerService = require("../services/formCheckerService");
 const formCheckHistory = require("../models/formCheckHistoryModel");
-const catchAsync = require("../utils/catchAsync");
+const fs = require("fs");
+
+const removeUploadedFile = (filePath) => {
+  try {
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (error) {
+    console.error("Failed to remove uploaded form-check video:", error.message);
+  }
+};
 
 exports.analyzeUserVideo = async (req, res) => {
   try {
@@ -34,5 +44,7 @@ exports.analyzeUserVideo = async (req, res) => {
     return res.status(200).json({ success: true, data: newRecord });
   } catch (error) {
     return res.status(500).json({ success: false, msg: error.message });
+  } finally {
+    removeUploadedFile(req.file?.path);
   }
 };

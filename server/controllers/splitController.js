@@ -1,6 +1,6 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-const Split = require("../models/SplitModel");
+const Split = require("../models/splitModel");
 const User = require("../models/userModel");
 const factory = require("./handlerFactory");
 
