@@ -85,32 +85,19 @@ exports.login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({
-      status: "fail",
-      msg: "Please provide username and password",
-    });
+    return next(new AppError("Please provide username and password", 400));
   }
 
   const user = await User.findOne({ username }).select("+password");
 
-  if (!user)
-    return res.status(400).json({
-      status: "fail",
-      msg: "user not found",
-    });
+  if (!user) return next(new AppError("User not found", 400));
 
   if (!user.isVerified) {
-    return res.status(400).json({
-      status: "fail",
-      msg: "please verify email first",
-    });
+    return next(new AppError("Please verify your email first", 400));
   }
 
   if (!(await user.correctPassword(password, user.password)))
-    return res.status(400).json({
-      status: "fail",
-      msg: "invalid password",
-    });
+    return next(new AppError("Invalid password", 400));
 
   createSendToken(user, 200, res);
 });
@@ -123,7 +110,7 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({
     status: "success",
-    msg: "Logged out successfully",
+    message: "Logged out successfully",
   });
 };
 
@@ -217,7 +204,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: "success",
-      msg: "Token sent to email!",
+      message: "Token sent to email!",
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -225,8 +212,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
 
     return next(
-      new AppError("There was an error sending the email. Try again later!"),
-      500,
+      new AppError(
+        "There was an error sending the email. Try again later!",
+        500,
+      ),
     );
   }
 });

@@ -2,8 +2,9 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const express = require("express");
-const connectdb = require("./config/db");
 const cookieParser = require("cookie-parser");
+const connectdb = require("./config/db");
+const errorHandler = require("./utils/errorHandler");
 
 const userRoute = require("./routes/userRoutes");
 const foodRoutes = require("./routes/foodRoutes");
@@ -69,16 +70,7 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    msg: err.message,
-  });
-});
+app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
 

@@ -1,11 +1,12 @@
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
+
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:5001";
 
-const predictCalories = async (req, res) => {
+const predictCalories = catchAsync(async (req, res, next) => {
   const errors = validatePredictBody(req.body);
   if (errors.length > 0) {
-    return res
-      .status(422)
-      .json({ error: "Validation failed", details: errors });
+    return next(new AppError(`Validation failed: ${errors.join(", ")}`, 422));
   }
 
   const payload = {
@@ -17,43 +18,37 @@ const predictCalories = async (req, res) => {
     heart_rate: Number(req.body.heart_rate),
   };
 
+  let mlRes, data;
   try {
-    const mlRes = await fetch(`${ML_SERVICE_URL}/predict`, {
+    mlRes = await fetch(`${ML_SERVICE_URL}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-
-    const data = await mlRes.json();
-
-    if (!mlRes.ok) {
-      return res.status(mlRes.status).json({
-        error: data.error || "Downstream Validation Failed",
-        details:
-          data.details ||
-          data.detail ||
-          "An unexpected validation error occurred.",
-      });
-    }
-
-    return res.status(200).json(data);
+    data = await mlRes.json();
   } catch (err) {
     console.error("[calorieController] ML service unreachable:", err.message);
-    return res
-      .status(503)
-      .json({ error: "ML service unavailable. Please try again later." });
+    return next(new AppError("ML service unavailable. Please try again later.", 503));
   }
-};
 
-const checkHealth = async (req, res) => {
-  try {
-    const mlRes = await fetch(`${ML_SERVICE_URL}/health`);
-    const data = await mlRes.json();
-    return res.status(mlRes.ok ? 200 : 502).json(data);
-  } catch (err) {
-    return res.status(503).json({ status: "ml_service_unreachable" });
+  if (!mlRes.ok) {
+    return next(new AppError(data.error || "Downstream validation failed", mlRes.status));
   }
-};
+
+  return res.status(200).json(data);
+});
+
+const checkHealth = catchAsync(async (req, res, next) => {
+  let mlRes, data;
+  try {
+    mlRes = await fetch(`${ML_SERVICE_URL}/health`);
+    data = await mlRes.json();
+  } catch (err) {
+    return next(new AppError("ML service unreachable", 503));
+  }
+
+  return res.status(mlRes.ok ? 200 : 502).json(data);
+});
 
 const validatePredictBody = (body) => {
   const errors = [];

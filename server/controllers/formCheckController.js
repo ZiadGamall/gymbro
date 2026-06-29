@@ -1,5 +1,7 @@
 const formCheckerService = require("../services/formCheckerService");
 const formCheckHistory = require("../models/formCheckHistoryModel");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 const fs = require("fs");
 
 const removeUploadedFile = (filePath) => {
@@ -12,12 +14,10 @@ const removeUploadedFile = (filePath) => {
   }
 };
 
-exports.analyzeUserVideo = async (req, res) => {
+exports.analyzeUserVideo = catchAsync(async (req, res, next) => {
   try {
     if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Please upload a video file." });
+      return next(new AppError("Please upload a video file.", 400));
     }
 
     const mode = req.body.mode || "Beginner";
@@ -28,23 +28,18 @@ exports.analyzeUserVideo = async (req, res) => {
 
     console.log("SUCCESS! Data received from Python:", aiResult);
 
-    // Save aligned metrics to MongoDB
     const newRecord = await formCheckHistory.create({
       user: req.user.id,
       exercise: aiResult.exercise || "Squats",
       mode: aiResult.mode || mode,
-      correct_reps:
-        aiResult.correct_reps !== undefined ? aiResult.correct_reps : 0,
-      incorrect_reps:
-        aiResult.incorrect_reps !== undefined ? aiResult.incorrect_reps : 0,
-      errors_detected: aiResult.errors_detected || [], // Aligned with FastAPI response
-      output_video: aiResult.output_video || null, // Storing video file pointer
+      correct_reps: aiResult.correct_reps !== undefined ? aiResult.correct_reps : 0,
+      incorrect_reps: aiResult.incorrect_reps !== undefined ? aiResult.incorrect_reps : 0,
+      errors_detected: aiResult.errors_detected || [],
+      output_video: aiResult.output_video || null,
     });
 
     return res.status(200).json({ success: true, data: newRecord });
-  } catch (error) {
-    return res.status(500).json({ success: false, msg: error.message });
   } finally {
     removeUploadedFile(req.file?.path);
   }
-};
+});

@@ -1,5 +1,5 @@
 const catchAsync = require("../utils/catchAsync");
-const OnboardingProfile = require("../models/OnboardingProfileModel");
+const OnboardingProfile = require("../models/onboardingProfileModel");
 
 // Streamlined read handler using core query targeting
 exports.getOnboarding = catchAsync(async (req, res) => {
@@ -25,7 +25,7 @@ exports.upsertOnboarding = catchAsync(async (req, res) => {
     "proteinTarget",
     "carbsTarget",
     "fatTarget",
-    "limitation",
+    "limitations",
   ];
 
   const payload = {};

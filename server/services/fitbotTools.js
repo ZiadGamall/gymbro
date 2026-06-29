@@ -10,7 +10,7 @@ const {
 } = require("../controllers/workoutSessionController");
 const Split = require("../models/splitModel");
 const User = require("../models/userModel");
-const OnboardingProfile = require("../models/OnboardingProfileModel");
+const OnboardingProfile = require("../models/onboardingProfileModel");
 const NutritionPlan = require("../models/NutritionPlanModel");
 
 /**

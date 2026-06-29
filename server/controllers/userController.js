@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-const appError = require("../utils/appError");
+const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const fs = require("fs");
 const path = require("path");
@@ -28,15 +28,15 @@ const filterObj = (obj) => {
 exports.updateAccount = catchAsync(async (req, res, next) => {
   const { currentPassword } = req.body;
   if (!currentPassword)
-    return next(new appError("Current password is required", 400));
+    return next(new AppError("Current password is required", 400));
 
   // 1) Get user + password (for verification)
   const user = await User.findById(req.user.id).select("+password");
-  if (!user) return next(new appError("User not found", 404));
+  if (!user) return next(new AppError("User not found", 404));
 
   // 2) Verify current password
   const ok = await user.correctPassword(currentPassword, user.password);
-  if (!ok) return next(new appError("Current password is incorrect", 401));
+  if (!ok) return next(new AppError("Current password is incorrect", 401));
 
   // 3) Prepare update data (allowlist)
   const updates = filterObj(req.body);
@@ -72,7 +72,7 @@ exports.updateAccount = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      msg: "Account updated successfully",
+      message: "Account updated successfully",
       user: updatedUser,
     },
   });
@@ -83,22 +83,20 @@ exports.deleteAccount = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new appError("Email and password are required", 400));
+    return next(new AppError("Email and password are required", 400));
   }
 
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    return next(new appError("User not found", 404));
+    return next(new AppError("User not found", 404));
   }
 
   if (!(await user.correctPassword(password, user.password))) {
-    return next(new appError("Invalid password", 400));
+    return next(new AppError("Invalid password", 400));
   }
 
   if (user.photo) {
-    const fs = require("fs");
-    const path = require("path");
     const imagePath = path.join(__dirname, "../uploads", user.photo);
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
@@ -109,8 +107,11 @@ exports.deleteAccount = catchAsync(async (req, res, next) => {
   await User.findOneAndDelete({ email });
 
   res.status(200).json({
-    msg: "Account deleted successfully",
-    deletedUser: user.username,
+    status: "success",
+    data: {
+      message: "Account deleted successfully",
+      deletedUser: user.username,
+    },
   });
 });
 
