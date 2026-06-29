@@ -25,6 +25,7 @@ exports.upsertOnboarding = catchAsync(async (req, res) => {
     "proteinTarget",
     "carbsTarget",
     "fatTarget",
+    "limitation",
   ];
 
   const payload = {};

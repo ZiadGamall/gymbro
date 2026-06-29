@@ -49,6 +49,10 @@ const onboardingProfileSchema = new mongoose.Schema(
       default: 250,
       min: 0,
     },
+    limitations: {
+      type: String,
+      default: "",
+    },
     fatTarget: {
       type: Number,
       default: 70,

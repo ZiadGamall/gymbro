@@ -70,6 +70,10 @@ const userSchema = new mongoose.Schema({
       ref: "Split",
     },
   ],
+  savedNutritionPlan: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "NutritionPlan",
+  },
 
   verifyToken: String,
   passwordChangedAt: Date,
