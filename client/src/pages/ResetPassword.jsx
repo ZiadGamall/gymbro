@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Lock, Eye, EyeOff, Dumbbell, ArrowRight } from "lucide-react";
+import { Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import axios from "axios";
+import AuthLayout from "../components/layout/AuthLayout";
+import AnimatedInput from "../components/ui/AnimatedInput";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -16,7 +18,6 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
     setError("");
     setSuccess("");
@@ -32,13 +33,10 @@ const ResetPassword = () => {
       }
 
       setSuccess("Password reset successful! Redirecting...");
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1200);
+      setTimeout(() => navigate("/dashboard"), 1200);
     } catch (err) {
       setError(
-        err.response?.data?.msg ||
-          "Failed to reset password. Please try again.",
+        err.response?.data?.msg || "Failed to reset password. Please try again."
       );
     } finally {
       setLoading(false);
@@ -46,122 +44,89 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--accent)] rounded-2xl mb-4">
-            <Dumbbell className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-            Reset Password
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-2">
-            Create a new password for your account
-          </p>
-        </div>
+    <AuthLayout
+      title="Reset password"
+      subtitle="Create a new password for your account"
+    >
+      {error   && <div className="alert-danger"  style={{ marginBottom: 20 }}>{error}</div>}
+      {success && <div className="alert-success" style={{ marginBottom: 20 }}>{success}</div>}
 
-        <div className="card">
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {error}
-            </div>
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <AnimatedInput
+          label="New password"
+          id="rp-password"
+          type={showPassword ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter a new password"
+          autoComplete="new-password"
+          required
+          disabled={loading}
+          icon={<Lock size={16} />}
+          iconRight={showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          onIconRightClick={() => setShowPassword(!showPassword)}
+          iconRightLabel={showPassword ? "Hide password" : "Show password"}
+        />
+
+        <AnimatedInput
+          label="Confirm password"
+          id="rp-confirm"
+          type={showConfirm ? "text" : "password"}
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+          placeholder="Confirm your new password"
+          autoComplete="new-password"
+          required
+          disabled={loading}
+          icon={<Lock size={16} />}
+          iconRight={showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+          onIconRightClick={() => setShowConfirm(!showConfirm)}
+          iconRightLabel={showConfirm ? "Hide confirm password" : "Show confirm password"}
+        />
+
+        <button
+          type="submit"
+          disabled={loading || !password || !passwordConfirm}
+          className="btn-filled"
+          style={{
+            width: "100%",
+            fontSize: 15,
+            padding: "13px 20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          {loading ? (
+            <span className="spinner" />
+          ) : (
+            <>
+              Reset password
+              <ArrowRight size={16} strokeWidth={2} />
+            </>
           )}
+        </button>
+      </form>
 
-          {success && (
-            <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-              {success}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-[var(--text-primary)] font-medium mb-2">
-                New password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input-field-with-icon-right w-full"
-                  placeholder="Enter a new password"
-                  required
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[var(--text-primary)] font-medium mb-2">
-                Confirm password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  value={passwordConfirm}
-                  onChange={(e) => setPasswordConfirm(e.target.value)}
-                  className="input-field-with-icon-right w-full"
-                  placeholder="Confirm your new password"
-                  required
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-                >
-                  {showConfirm ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !password || !passwordConfirm}
-              className="btn-primary w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  Reset password
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-[var(--text-secondary)]">
-              Back to{" "}
-              <Link
-                to="/login"
-                className="text-[var(--accent)] hover:text-[var(--accent-hover)] font-medium transition-colors"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      <p
+        style={{
+          marginTop: 22,
+          textAlign: "center",
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 13.5,
+          color: "var(--text-secondary)",
+        }}
+      >
+        Back to{" "}
+        <Link
+          to="/login"
+          style={{ color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}
+        >
+          Sign in
+        </Link>
+      </p>
+    </AuthLayout>
   );
 };
 

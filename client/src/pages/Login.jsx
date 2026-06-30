@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Lock, Eye, EyeOff, Dumbbell } from "lucide-react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import AuthLayout from "../components/layout/AuthLayout";
+import AnimatedInput from "../components/ui/AnimatedInput";
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -15,10 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -29,13 +25,10 @@ const Login = () => {
 
     try {
       const response = await axios.post("/api/v1/users/login", formData);
-
       if (response.data.status === "success") {
         localStorage.setItem("token", response.data.token);
         setSuccess("Login successful! Redirecting...");
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1500);
+        setTimeout(() => navigate("/dashboard"), 1500);
       }
     } catch (err) {
       setError(err.response?.data?.msg || "Login failed. Please try again.");
@@ -45,118 +38,91 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--accent)] rounded-2xl mb-4">
-            <Dumbbell className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-            Welcome Back
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-2">
-            Sign in to your GymBro account
-          </p>
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Sign in to your GymBro account"
+    >
+      {error   && <div className="alert-danger"  style={{ marginBottom: 20 }}>{error}</div>}
+      {success && <div className="alert-success" style={{ marginBottom: 20 }}>{success}</div>}
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <AnimatedInput
+          label="Username"
+          name="username"
+          id="login-username"
+          type="text"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="Enter your username"
+          autoComplete="username"
+          required
+          disabled={loading}
+          icon={<User size={16} />}
+        />
+
+        <AnimatedInput
+          label="Password"
+          name="password"
+          id="login-password"
+          type={showPassword ? "text" : "password"}
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Enter your password"
+          autoComplete="current-password"
+          required
+          disabled={loading}
+          icon={<Lock size={16} />}
+          iconRight={showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          onIconRightClick={() => setShowPassword(!showPassword)}
+          iconRightLabel={showPassword ? "Hide password" : "Show password"}
+        />
+
+        {/* Forgot password link */}
+        <div style={{ textAlign: "right", marginTop: -6 }}>
+          <Link
+            to="/forgot-password"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "var(--text-secondary)",
+              textDecoration: "none",
+              transition: "color 0.15s ease",
+            }}
+            onMouseEnter={(e) => (e.target.style.color = "var(--accent)")}
+            onMouseLeave={(e) => (e.target.style.color = "var(--text-secondary)")}
+          >
+            Forgot password?
+          </Link>
         </div>
 
-        {/* Login Form */}
-        <div className="card">
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {error}
-            </div>
-          )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-filled"
+          style={{ width: "100%", marginTop: 4, fontSize: 15, padding: "13px 20px" }}
+        >
+          {loading ? <span className="spinner" /> : "Sign In"}
+        </button>
+      </form>
 
-          {success && (
-            <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-              {success}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-[var(--text-primary)] font-medium mb-2">
-                Username
-              </label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="input-field-with-icon w-full"
-                  placeholder="Enter your username"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[var(--text-primary)] font-medium mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input-field-with-icon-right w-full"
-                  placeholder="Enter your password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-              <div className="mt-3 text-right">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                "Sign In"
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-[var(--text-secondary)]">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-[var(--accent)] hover:text-[var(--accent-hover)] font-medium transition-colors"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      <p
+        style={{
+          marginTop: 22,
+          textAlign: "center",
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 13.5,
+          color: "var(--text-secondary)",
+        }}
+      >
+        Don&apos;t have an account?{" "}
+        <Link
+          to="/register"
+          style={{ color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}
+        >
+          Sign up
+        </Link>
+      </p>
+    </AuthLayout>
   );
 };
 

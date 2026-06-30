@@ -115,3 +115,35 @@ export async function loadWeeklyProgress() {
   });
   return res?.data?.data?.progress || [];
 }
+
+/* ─── FitBot AI ───────────────────────────────────────────────────────────── */
+
+/**
+ * Send a chat message to the FitBot AI.
+ * @param {string} message - The user's message text.
+ * @param {Array<{role:"user"|"assistant", content:string}>} history - Prior turns.
+ * @returns {Promise<{reply: string}>}
+ */
+export async function sendFitBotMessage(message, history = []) {
+  const res = await axios.post(
+    "/api/v1/fitbot/chat",
+    { message, history },
+    { headers: authHeaders() }
+  );
+  return res?.data?.data || { reply: res?.data?.reply || "" };
+}
+
+/**
+ * Estimate calories burned for a given activity.
+ * All calculation logic lives on the backend.
+ * @param {{ weight: number, height: number, age: number, gender: string, activity: string, duration: number }} payload
+ * @returns {Promise<{ caloriesBurned: number, met: number, notes: string }>}
+ */
+export async function estimateCaloriesBurned(payload) {
+  const res = await axios.post(
+    "/api/v1/fitbot/calories",
+    payload,
+    { headers: authHeaders() }
+  );
+  return res?.data?.data || {};
+}
