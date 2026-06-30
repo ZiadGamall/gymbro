@@ -15,8 +15,32 @@ const get7Days = () => {
   });
 };
 
-// 1. Basic CRUD rewritten using your new factory utilities
-exports.getWorkoutSessions = factory.getAllFieldFilter(WorkoutSession);
+const toDateKey = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value.slice(0, 10);
+  return new Date(value).toISOString().slice(0, 10);
+};
+
+// 1. List sessions with optional YYYY-MM-DD filter
+exports.getWorkoutSessions = catchAsync(async (req, res) => {
+  const filter = { user: req.user.id };
+
+  if (req.query.date) {
+    const day = String(req.query.date).slice(0, 10);
+    const start = new Date(`${day}T00:00:00.000Z`);
+    const end = new Date(`${day}T23:59:59.999Z`);
+    filter.date = { $gte: start, $lte: end };
+  }
+
+  const docs = await WorkoutSession.find(filter).sort({ createdAt: -1 });
+
+  res.status(200).json({
+    status: "success",
+    results: docs.length,
+    data: docs,
+  });
+});
+
 exports.deleteWorkoutSession = factory.deleteOne(WorkoutSession);
 
 // 2. The Log/Add controller updated to use your robust nested exercises payload
@@ -103,7 +127,7 @@ exports.getWeeklyProgress = catchAsync(async (req, res) => {
 
   const progress = days.map((date) => {
     const dayMeals = meals.filter((m) => m.date === date);
-    const dayWorkouts = workouts.filter((w) => w.date === date);
+    const dayWorkouts = workouts.filter((w) => toDateKey(w.date) === date);
 
     const calories = dayMeals.reduce(
       (sum, m) => sum + Number(m.calories || 0),

@@ -1,13 +1,59 @@
 import axios from "axios";
 import { getHealthState, saveHealthState } from "./healthStore";
 
-const authHeaders = () => {
+const WORKOUT_SESSION_BASE = "/api/v1/workout-session";
+
+export const authHeaders = () => {
   const token = localStorage.getItem("token");
-  return token
-    ? {
-        Authorization: `Bearer ${token}`,
-      }
-    : {};
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+/** Backend errors use `message`; legacy handlers may still send `msg`. */
+export const getApiError = (err, fallback = "Request failed.") =>
+  err?.response?.data?.message || err?.response?.data?.msg || fallback;
+
+/** GET /users/me returns the user doc in `data`; login wraps it in `data.user`. */
+export const parseUserResponse = (res) =>
+  res?.data?.data?.user ?? res?.data?.data ?? null;
+
+const normalizeSessionDate = (date) => {
+  if (!date) return "";
+  if (typeof date === "string") return date.slice(0, 10);
+  return new Date(date).toISOString().slice(0, 10);
+};
+
+export const normalizeWorkoutSession = (session) => ({
+  ...session,
+  id: session._id || session.id,
+  planName: session.workoutName || session.planName || "Workout",
+  durationMin: session.duration ?? session.durationMin ?? 0,
+  completed: true,
+  intensity: session.intensity || "moderate",
+  date: normalizeSessionDate(session.date),
+});
+
+const transformWorkoutPayload = (payload) => {
+  if (payload.exercises?.length) {
+    return {
+      workoutId: payload.workoutId,
+      workoutName: payload.workoutName || payload.planName,
+      duration: payload.duration ?? payload.durationMin,
+      date: payload.date,
+      exercises: payload.exercises,
+    };
+  }
+
+  return {
+    workoutName: payload.planName || payload.workoutName || "Manual Workout",
+    duration: Number(payload.durationMin ?? payload.duration ?? 30),
+    date: payload.date,
+    exercises: [
+      {
+        name: payload.planName || "General Training",
+        sets: [{ setNumber: 1, weight: 0, reps: 1 }],
+      },
+    ],
+  };
 };
 
 export async function loadOnboarding() {
@@ -52,19 +98,30 @@ export async function saveOnboarding(form) {
   return onboarding;
 }
 
+export async function searchFoodByName(name) {
+  const res = await axios.post("/api/v1/food/search", { name });
+  return res?.data?.data?.data || [];
+}
+
 export async function loadNutritionEntries(date) {
   const res = await axios.get("/api/v1/nutrition/entries", {
     params: { date },
     headers: authHeaders(),
   });
-  return res?.data?.data?.entries || [];
+  const raw = res?.data?.data;
+  const entries = Array.isArray(raw) ? raw : raw?.entries || [];
+  return entries.map((entry) => ({
+    ...entry,
+    id: entry._id || entry.id,
+  }));
 }
 
 export async function addNutritionEntryApi(payload) {
   const res = await axios.post("/api/v1/nutrition/entries", payload, {
     headers: authHeaders(),
   });
-  return res?.data?.data?.entry;
+  const entry = res?.data?.data?.mealEntry || res?.data?.data?.entry;
+  return entry ? { ...entry, id: entry._id || entry.id } : entry;
 }
 
 export async function deleteNutritionEntryApi(id) {
@@ -78,39 +135,43 @@ export async function loadNutritionSummary(date) {
     params: { date },
     headers: authHeaders(),
   });
-  return res?.data?.data?.totals || { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  return (
+    res?.data?.data?.totals || { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
 }
 
 export async function loadWorkoutSessions(date) {
-  const res = await axios.get("/api/v1/workouts/sessions", {
-    params: { date },
+  const res = await axios.get(`${WORKOUT_SESSION_BASE}/sessions`, {
+    params: date ? { date } : {},
     headers: authHeaders(),
   });
-  return res?.data?.data?.sessions || [];
+  const raw = res?.data?.data;
+  const sessions = Array.isArray(raw) ? raw : raw?.sessions || [];
+  const normalized = sessions.map(normalizeWorkoutSession);
+  if (date) {
+    return normalized.filter((session) => session.date === date);
+  }
+  return normalized;
 }
 
 export async function addWorkoutSessionApi(payload) {
-  const res = await axios.post("/api/v1/workouts/sessions", payload, {
-    headers: authHeaders(),
-  });
-  return res?.data?.data?.session;
-}
-
-export async function toggleWorkoutSessionApi(id) {
-  const res = await axios.patch(`/api/v1/workouts/sessions/${id}/toggle`, null, {
-    headers: authHeaders(),
-  });
-  return res?.data?.data?.session;
+  const res = await axios.post(
+    `${WORKOUT_SESSION_BASE}/sessions`,
+    transformWorkoutPayload(payload),
+    { headers: authHeaders() },
+  );
+  const session = res?.data?.data?.session;
+  return session ? normalizeWorkoutSession(session) : session;
 }
 
 export async function deleteWorkoutSessionApi(id) {
-  await axios.delete(`/api/v1/workouts/sessions/${id}`, {
+  await axios.delete(`${WORKOUT_SESSION_BASE}/sessions/${id}`, {
     headers: authHeaders(),
   });
 }
 
 export async function loadWeeklyProgress() {
-  const res = await axios.get("/api/v1/workouts/progress/weekly", {
+  const res = await axios.get(`${WORKOUT_SESSION_BASE}/progress/weekly`, {
     headers: authHeaders(),
   });
   return res?.data?.data?.progress || [];
@@ -120,30 +181,42 @@ export async function loadWeeklyProgress() {
 
 /**
  * Send a chat message to the FitBot AI.
- * @param {string} message - The user's message text.
- * @param {Array<{role:"user"|"assistant", content:string}>} history - Prior turns.
+ * @param {string} message
+ * @param {Array<{role:"user"|"assistant", content:string}>} history
  * @returns {Promise<{reply: string}>}
  */
 export async function sendFitBotMessage(message, history = []) {
   const res = await axios.post(
     "/api/v1/fitbot/chat",
     { message, history },
-    { headers: authHeaders() }
+    { headers: authHeaders() },
   );
-  return res?.data?.data || { reply: res?.data?.reply || "" };
+  return { reply: res?.data?.reply || res?.data?.data?.reply || "" };
 }
 
 /**
- * Estimate calories burned for a given activity.
- * All calculation logic lives on the backend.
- * @param {{ weight: number, height: number, age: number, gender: string, activity: string, duration: number }} payload
- * @returns {Promise<{ caloriesBurned: number, met: number, notes: string }>}
+ * Estimate calories burned via the ML calorie predictor service.
+ * @param {{ weight: number, height: number, age: number, gender: string, duration: number, heart_rate?: number }} payload
+ * @returns {Promise<{ caloriesBurned: number, unit?: string, notes?: string }>}
  */
 export async function estimateCaloriesBurned(payload) {
+  const heartRate = payload.heart_rate ?? payload.heartRate ?? 120;
   const res = await axios.post(
-    "/api/v1/fitbot/calories",
-    payload,
-    { headers: authHeaders() }
+    "/api/v1/calories/predict",
+    {
+      gender: payload.gender,
+      age: Number(payload.age),
+      height: Number(payload.height),
+      weight: Number(payload.weight),
+      duration: Number(payload.duration),
+      heart_rate: Number(heartRate),
+    },
+    { headers: authHeaders() },
   );
-  return res?.data?.data || {};
+  const data = res?.data || {};
+  return {
+    caloriesBurned: data.calories_burned ?? data.caloriesBurned,
+    unit: data.unit || "kcal",
+    notes: `Estimated from ${payload.duration} min at ~${heartRate} bpm avg heart rate`,
+  };
 }

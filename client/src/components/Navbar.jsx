@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import axios from "axios";
+import { parseUserResponse } from "../lib/healthApi";
 
 const navVariants = {
   hidden: { opacity: 0, y: -12 },
@@ -62,7 +63,7 @@ const Navbar = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setMe(res?.data?.data?.user || null);
+        setMe(parseUserResponse(res));
       } catch {
         setMe(null);
       }

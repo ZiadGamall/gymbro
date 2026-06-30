@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import { getApiError } from "../lib/healthApi";
 import AuthLayout from "../components/layout/AuthLayout";
 import AnimatedInput from "../components/ui/AnimatedInput";
 
@@ -31,7 +32,7 @@ const Login = () => {
         setTimeout(() => navigate("/dashboard"), 1500);
       }
     } catch (err) {
-      setError(err.response?.data?.msg || "Login failed. Please try again.");
+      setError(getApiError(err, "Login failed. Please try again."));
     } finally {
       setLoading(false);
     }

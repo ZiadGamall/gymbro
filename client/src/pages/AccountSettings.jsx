@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Calendar, Camera, Eye, EyeOff, KeyRound, Lock, Mail, Ruler, Save, User } from 'lucide-react'
 import axios from 'axios'
+import { getApiError, parseUserResponse } from '../lib/healthApi'
 
 const WeightScaleIcon = ({ className }) => (
   <svg
@@ -66,7 +67,7 @@ const AccountSettings = () => {
           }
         })
 
-        const user = res?.data?.data?.user
+        const user = parseUserResponse(res)
         setMe(user)
 
         setFormData((prev) => ({
@@ -152,7 +153,7 @@ const AccountSettings = () => {
       })
 
       const updatedUser = response?.data?.data?.user
-      const msg = response?.data?.data?.msg
+      const msg = response?.data?.data?.message
       setSuccess(msg || 'Account updated successfully!')
       if (updatedUser) setMe(updatedUser)
 

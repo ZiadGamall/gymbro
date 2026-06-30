@@ -9,6 +9,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import axios from "axios";
+import { getApiError } from "../lib/healthApi";
 
 const FoodSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,6 +46,19 @@ const FoodSearch = () => {
   };
 
   const normalizeFood = (item) => {
+    if (item?.foodId || item?.foodName) {
+      return {
+        ...item,
+        displayName: item.foodName || item.food || "Unknown Food",
+        servingSize: "100g",
+        nutrients: {},
+        calories: item.caloriesPer100g ?? null,
+        protein: item.proteinPer100g ?? null,
+        carbs: item.carbsPer100g ?? null,
+        fat: item.fatPer100g ?? null,
+      };
+    }
+
     const nutrients = item?.nutrients || {};
     return {
       ...item,
@@ -90,9 +104,7 @@ const FoodSearch = () => {
         setPortionGrams(100);
         setIsMoreOpen(false);
       } catch (err) {
-        setError(
-          err.response?.data?.msg || "Failed to load foods. Please try again.",
-        );
+        setError(getApiError(err, "Failed to load foods. Please try again."));
         setResults([]);
         setSelectedFood(null);
       } finally {
@@ -124,7 +136,7 @@ const FoodSearch = () => {
         setIsMoreOpen(false);
       }
     } catch (err) {
-      setError(err.response?.data?.msg || "Search failed. Please try again.");
+      setError(getApiError(err, "Search failed. Please try again."));
       setResults([]);
       setSelectedFood(null);
     } finally {

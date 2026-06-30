@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import { getApiError } from "../lib/healthApi";
 import AuthLayout from "../components/layout/AuthLayout";
 import AnimatedInput from "../components/ui/AnimatedInput";
 
@@ -13,6 +14,7 @@ const Register = () => {
     email: "",
     password: "",
     passwordConfirm: "",
+    gender: "male",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,7 +51,7 @@ const Register = () => {
         setTimeout(() => navigate("/login"), 3000);
       }
     } catch (err) {
-      setError(err.response?.data?.msg || "Registration failed. Please try again.");
+      setError(getApiError(err, "Registration failed. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -114,6 +116,33 @@ const Register = () => {
           disabled={loading}
           icon={<Mail size={16} />}
         />
+
+        <div>
+          <label
+            htmlFor="reg-gender"
+            style={{
+              display: "block",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "var(--text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Gender
+          </label>
+          <select
+            id="reg-gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="input-field w-full"
+            required
+            disabled={loading}
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
 
         <AnimatedInput
           label="Password"

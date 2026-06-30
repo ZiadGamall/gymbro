@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import axios from "axios";
+import { parseUserResponse } from "../lib/healthApi";
 
 const riseUp = {
   hidden: { opacity: 0, y: 30 },
@@ -173,7 +174,7 @@ const Home = () => {
         const res = await axios.get("/api/v1/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMe(res?.data?.data?.user || null);
+        setMe(parseUserResponse(res));
       } catch {
         setMe(null);
         setIsLoggedIn(false);

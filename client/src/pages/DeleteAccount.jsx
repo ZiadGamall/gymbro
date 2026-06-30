@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, Trash2, Eye, EyeOff } from 'lucide-react'
 import axios from 'axios'
+import { getApiError } from '../lib/healthApi'
 
 const DeleteAccount = () => {
   const [formData, setFormData] = useState({
@@ -42,12 +43,8 @@ const DeleteAccount = () => {
     setSuccess('')
 
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.delete('/api/auth/Delete-Account', {
+      const response = await axios.delete('/api/v1/users/delete-account', {
         data: formData,
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       })
 
       setSuccess('Account deleted successfully!')
@@ -57,7 +54,7 @@ const DeleteAccount = () => {
         navigate('/')
       }, 2000)
     } catch (err) {
-      setError(err.response?.data?.msg || 'Account deletion failed. Please try again.')
+      setError(getApiError(err, 'Account deletion failed. Please try again.'))
     } finally {
       setLoading(false)
     }

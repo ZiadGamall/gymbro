@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Save } from 'lucide-react'
 import axios from 'axios'
+import { getApiError } from '../lib/healthApi'
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -75,7 +76,7 @@ const ChangePassword = () => {
         passwordConfirm: ''
       })
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.msg || 'Failed to update password.')
+      setError(getApiError(err, 'Failed to update password.'))
     } finally {
       setLoading(false)
     }

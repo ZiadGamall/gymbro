@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, ArrowRight } from "lucide-react";
 import axios from "axios";
+import { getApiError } from "../lib/healthApi";
 import AuthLayout from "../components/layout/AuthLayout";
 import AnimatedInput from "../components/ui/AnimatedInput";
 
@@ -27,7 +28,7 @@ const ForgotPassword = () => {
         setSuccess("If an account exists for this email, a reset link has been sent.");
       }
     } catch (err) {
-      setError(err.response?.data?.msg || "Failed to send reset email. Please try again.");
+      setError(getApiError(err, "Failed to send reset email. Please try again."));
     } finally {
       setLoading(false);
     }

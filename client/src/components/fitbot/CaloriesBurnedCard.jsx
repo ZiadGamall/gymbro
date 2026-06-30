@@ -1,34 +1,21 @@
 import { useState } from "react";
 import { Flame, Loader2 } from "lucide-react";
-import { estimateCaloriesBurned } from "../../lib/healthApi";
-
-const ACTIVITIES = [
-  { value: "walking",       label: "Walking" },
-  { value: "running",       label: "Running" },
-  { value: "cycling",       label: "Cycling" },
-  { value: "swimming",      label: "Swimming" },
-  { value: "weight_training", label: "Weight Training" },
-  { value: "hiit",          label: "HIIT" },
-  { value: "yoga",          label: "Yoga" },
-  { value: "rowing",        label: "Rowing" },
-  { value: "jump_rope",     label: "Jump Rope" },
-  { value: "stair_climbing", label: "Stair Climbing" },
-];
+import { estimateCaloriesBurned, getApiError } from "../../lib/healthApi";
 
 const DEFAULT_FORM = {
-  weight:   "",
-  height:   "",
-  age:      "",
-  gender:   "male",
-  activity: "running",
+  weight: "",
+  height: "",
+  age: "",
+  gender: "male",
   duration: "",
+  heartRate: "120",
 };
 
 export default function CaloriesBurnedCard() {
-  const [form,    setForm]    = useState(DEFAULT_FORM);
+  const [form, setForm] = useState(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
-  const [result,  setResult]  = useState(null);
-  const [error,   setError]   = useState(null);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -37,9 +24,16 @@ export default function CaloriesBurnedCard() {
   };
 
   const isValid =
-    form.weight && form.height && form.age && form.duration &&
-    Number(form.weight) > 0 && Number(form.height) > 0 &&
-    Number(form.age)    > 0 && Number(form.duration) > 0;
+    form.weight &&
+    form.height &&
+    form.age &&
+    form.duration &&
+    form.heartRate &&
+    Number(form.weight) > 0 &&
+    Number(form.height) > 0 &&
+    Number(form.age) > 0 &&
+    Number(form.duration) > 0 &&
+    Number(form.heartRate) > 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,20 +44,17 @@ export default function CaloriesBurnedCard() {
 
     try {
       const payload = {
-        weight:   Number(form.weight),
-        height:   Number(form.height),
-        age:      Number(form.age),
-        gender:   form.gender,
-        activity: form.activity,
+        weight: Number(form.weight),
+        height: Number(form.height),
+        age: Number(form.age),
+        gender: form.gender,
         duration: Number(form.duration),
+        heart_rate: Number(form.heartRate),
       };
       const data = await estimateCaloriesBurned(payload);
       setResult(data);
     } catch (err) {
-      setError(
-        err?.response?.data?.msg ||
-        "Could not calculate — backend unavailable."
-      );
+      setError(getApiError(err, "Could not calculate — backend unavailable."));
     } finally {
       setLoading(false);
     }
@@ -71,7 +62,6 @@ export default function CaloriesBurnedCard() {
 
   return (
     <div className="fitbot-cal-card">
-      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
         <span
           style={{
@@ -108,15 +98,13 @@ export default function CaloriesBurnedCard() {
               marginTop: 2,
             }}
           >
-            Calculated by the backend — no client-side estimates
+            ML-powered estimate via the calorie predictor service
           </p>
         </div>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="fitbot-cal-grid">
-          {/* Weight */}
           <div>
             <label className="field-label" htmlFor="cal-weight">Weight (kg)</label>
             <input
@@ -134,7 +122,6 @@ export default function CaloriesBurnedCard() {
             />
           </div>
 
-          {/* Height */}
           <div>
             <label className="field-label" htmlFor="cal-height">Height (cm)</label>
             <input
@@ -151,7 +138,6 @@ export default function CaloriesBurnedCard() {
             />
           </div>
 
-          {/* Age */}
           <div>
             <label className="field-label" htmlFor="cal-age">Age</label>
             <input
@@ -168,7 +154,6 @@ export default function CaloriesBurnedCard() {
             />
           </div>
 
-          {/* Duration */}
           <div>
             <label className="field-label" htmlFor="cal-duration">Duration (min)</label>
             <input
@@ -185,7 +170,6 @@ export default function CaloriesBurnedCard() {
             />
           </div>
 
-          {/* Gender */}
           <div>
             <label className="field-label" htmlFor="cal-gender">Gender</label>
             <select
@@ -200,20 +184,20 @@ export default function CaloriesBurnedCard() {
             </select>
           </div>
 
-          {/* Activity */}
           <div>
-            <label className="field-label" htmlFor="cal-activity">Activity</label>
-            <select
-              id="cal-activity"
-              name="activity"
-              value={form.activity}
+            <label className="field-label" htmlFor="cal-heartRate">Avg heart rate (bpm)</label>
+            <input
+              id="cal-heartRate"
+              name="heartRate"
+              type="number"
+              min="30"
+              max="220"
+              value={form.heartRate}
               onChange={handleChange}
               className="input-field"
-            >
-              {ACTIVITIES.map((a) => (
-                <option key={a.value} value={a.value}>{a.label}</option>
-              ))}
-            </select>
+              placeholder="120"
+              required
+            />
           </div>
         </div>
 
@@ -237,14 +221,12 @@ export default function CaloriesBurnedCard() {
         </button>
       </form>
 
-      {/* Error */}
       {error && (
         <div className="alert-danger" style={{ marginTop: 14 }}>
           {error}
         </div>
       )}
 
-      {/* Result */}
       {result && !error && (
         <div className="fitbot-cal-result">
           <div>

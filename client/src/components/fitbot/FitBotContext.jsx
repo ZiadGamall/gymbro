@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useCallback } from "react";
-import { sendFitBotMessage } from "../../lib/healthApi";
+import { sendFitBotMessage, getApiError } from "../../lib/healthApi";
 
 /* ─── Shape ─────────────────────────────────────────────────────────────────
    message: { id, role: "user"|"assistant", content, ts }
@@ -98,7 +98,7 @@ export function FitBotProvider({ children }) {
       dispatch({ type: "SET_THINKING", payload: false });
       dispatch({
         type:    "SET_ERROR",
-        payload: err?.response?.data?.msg || "FitBot is unavailable right now.",
+        payload: getApiError(err, "FitBot is unavailable right now."),
       });
     }
   }, [state.messages]);

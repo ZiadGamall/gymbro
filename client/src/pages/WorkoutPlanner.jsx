@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Circle, Dumbbell, Plus, Trash2 } from "lucide-react";
+import { CheckCircle2, Dumbbell, Plus, Trash2 } from "lucide-react";
 import { getHealthState } from "../lib/healthStore";
 import {
   addWorkoutSessionApi,
   deleteWorkoutSessionApi,
+  getApiError,
   loadOnboarding,
   loadWorkoutSessions,
-  toggleWorkoutSessionApi,
 } from "../lib/healthApi";
 
 const templates = {
@@ -74,8 +74,8 @@ const WorkoutPlanner = () => {
       const daySessions = await loadWorkoutSessions(today);
       setSessions(daySessions);
       setForm((prev) => ({ ...prev, notes: "" }));
-    } catch {
-      setError("Failed to add workout session.");
+    } catch (err) {
+      setError(getApiError(err, "Failed to add workout session."));
     }
   };
 
@@ -165,25 +165,7 @@ const WorkoutPlanner = () => {
                       {session.durationMin} min | {session.intensity}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        await toggleWorkoutSessionApi(session._id || session.id);
-                        const daySessions = await loadWorkoutSessions(today);
-                        setSessions(daySessions);
-                      } catch {
-                        setError("Failed to update workout status.");
-                      }
-                    }}
-                    className="text-[var(--accent)]"
-                  >
-                    {session.completed ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                      <Circle className="w-5 h-5" />
-                    )}
-                  </button>
+                  <CheckCircle2 className="w-5 h-5 text-[var(--accent)]" />
                 </div>
 
                 {session.notes && <div className="text-sm text-[var(--text-secondary)] mt-2">{session.notes}</div>}

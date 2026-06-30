@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { Trash2, Plus, Flame, Beef, Wheat, Droplets } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Trash2, Plus, Flame, Beef, Wheat, Droplets, Search } from "lucide-react";
 import { getHealthState } from "../lib/healthStore";
 import {
   addNutritionEntryApi,
   deleteNutritionEntryApi,
+  getApiError,
   loadNutritionEntries,
   loadNutritionSummary,
   loadOnboarding,
+  searchFoodByName,
 } from "../lib/healthApi";
 
 const mealOptions = ["breakfast", "lunch", "dinner", "snack"];
@@ -18,13 +20,14 @@ const NutritionDiary = () => {
   const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const [form, setForm] = useState({
     mealType: "breakfast",
+    foodId: "",
     foodName: "",
-    calories: "",
-    protein: "",
-    carbs: "",
-    fat: "",
+    weightConsumed: "100",
   });
 
   useEffect(() => {
@@ -57,28 +60,68 @@ const NutritionDiary = () => {
     fetchData();
   }, [today]);
 
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    if (!form.foodName.trim()) return;
+  const handleSearchFood = async () => {
+    if (!searchQuery.trim()) return;
+    setSearching(true);
     setError("");
     try {
-      await addNutritionEntryApi({ ...form, date: today });
-      const [dayEntries, dayTotals] = await Promise.all([
-        loadNutritionEntries(today),
-        loadNutritionSummary(today),
-      ]);
-      setEntries(dayEntries);
-      setTotals(dayTotals);
+      const results = await searchFoodByName(searchQuery.trim());
+      setSearchResults(results);
+      if (results.length === 0) {
+        setError("No foods found. Try another search term.");
+      }
+    } catch (err) {
+      setSearchResults([]);
+      setError(getApiError(err, "Food search failed."));
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const selectFood = (food) => {
+    setForm((prev) => ({
+      ...prev,
+      foodId: food.foodId,
+      foodName: food.foodName,
+    }));
+    setSearchResults([]);
+    setSearchQuery(food.foodName);
+    setError("");
+  };
+
+  const refreshDay = async () => {
+    const [dayEntries, dayTotals] = await Promise.all([
+      loadNutritionEntries(today),
+      loadNutritionSummary(today),
+    ]);
+    setEntries(dayEntries);
+    setTotals(dayTotals);
+  };
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    if (!form.foodId || !form.weightConsumed) {
+      setError("Search and select a food, then enter the portion weight in grams.");
+      return;
+    }
+    setError("");
+    try {
+      await addNutritionEntryApi({
+        foodId: form.foodId,
+        weightConsumed: Number(form.weightConsumed),
+        mealType: form.mealType,
+        date: today,
+      });
+      await refreshDay();
       setForm({
         mealType: "breakfast",
+        foodId: "",
         foodName: "",
-        calories: "",
-        protein: "",
-        carbs: "",
-        fat: "",
+        weightConsumed: "100",
       });
-    } catch {
-      setError("Failed to add nutrition entry.");
+      setSearchQuery("");
+    } catch (err) {
+      setError(getApiError(err, "Failed to add nutrition entry."));
     }
   };
 
@@ -106,6 +149,47 @@ const NutritionDiary = () => {
 
           <form onSubmit={handleAdd} className="card space-y-4">
             <h2 className="font-semibold text-[var(--text-primary)]">Add meal entry</h2>
+
+            <div className="flex gap-2">
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search food database (e.g. chicken, rice)"
+                className="input-field w-full"
+              />
+              <button
+                type="button"
+                onClick={handleSearchFood}
+                className="btn-secondary inline-flex items-center gap-2 flex-shrink-0"
+                disabled={searching || !searchQuery.trim()}
+              >
+                <Search className="w-4 h-4" />
+                {searching ? "..." : "Search"}
+              </button>
+            </div>
+
+            {searchResults.length > 0 && (
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] max-h-48 overflow-y-auto">
+                {searchResults.map((food) => (
+                  <button
+                    key={food.foodId}
+                    type="button"
+                    onClick={() => selectFood(food)}
+                    className="w-full text-left px-4 py-3 hover:bg-[var(--bg-tertiary)] border-b border-[var(--border)] last:border-b-0"
+                  >
+                    <div className="text-[var(--text-primary)] font-medium">{food.foodName}</div>
+                    <div className="text-xs text-[var(--text-secondary)] mt-1">
+                      {food.caloriesPer100g} kcal / 100g · P {food.proteinPer100g}g · C {food.carbsPer100g}g · F {food.fatPer100g}g
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {form.foodName && (
+              <p className="text-sm text-[var(--accent)]">Selected: {form.foodName}</p>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4">
               <select
                 value={form.mealType}
@@ -119,43 +203,13 @@ const NutritionDiary = () => {
                 ))}
               </select>
               <input
-                value={form.foodName}
-                onChange={(e) => setForm((f) => ({ ...f, foodName: e.target.value }))}
-                placeholder="Food name"
+                value={form.weightConsumed}
+                onChange={(e) => setForm((f) => ({ ...f, weightConsumed: e.target.value }))}
+                type="number"
+                min="1"
+                placeholder="Portion weight (g)"
                 className="input-field w-full"
                 required
-              />
-              <input
-                value={form.calories}
-                onChange={(e) => setForm((f) => ({ ...f, calories: e.target.value }))}
-                type="number"
-                min="0"
-                placeholder="Calories"
-                className="input-field w-full"
-              />
-              <input
-                value={form.protein}
-                onChange={(e) => setForm((f) => ({ ...f, protein: e.target.value }))}
-                type="number"
-                min="0"
-                placeholder="Protein (g)"
-                className="input-field w-full"
-              />
-              <input
-                value={form.carbs}
-                onChange={(e) => setForm((f) => ({ ...f, carbs: e.target.value }))}
-                type="number"
-                min="0"
-                placeholder="Carbs (g)"
-                className="input-field w-full"
-              />
-              <input
-                value={form.fat}
-                onChange={(e) => setForm((f) => ({ ...f, fat: e.target.value }))}
-                type="number"
-                min="0"
-                placeholder="Fat (g)"
-                className="input-field w-full"
               />
             </div>
             <button type="submit" className="btn-primary inline-flex items-center gap-2">
@@ -168,12 +222,13 @@ const NutritionDiary = () => {
             <h2 className="font-semibold text-[var(--text-primary)] mb-4">Today entries</h2>
             <div className="space-y-3">
               {entries
-                .filter((entry) => entry.date === new Date().toISOString().slice(0, 10))
+                .filter((entry) => entry.date === today)
                 .map((entry) => (
-                  <div key={entry.id} className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between">
+                  <div key={entry.id || entry._id} className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between">
                     <div>
                       <div className="text-[var(--text-primary)] font-medium">
-                        {entry.foodName} <span className="text-[var(--text-secondary)] text-sm">({entry.mealType})</span>
+                        {entry.foodName}{" "}
+                        <span className="text-[var(--text-secondary)] text-sm">({entry.mealType})</span>
                       </div>
                       <div className="text-sm text-[var(--text-secondary)] mt-1">
                         {entry.calories} kcal | P {entry.protein}g | C {entry.carbs}g | F {entry.fat}g
@@ -184,14 +239,9 @@ const NutritionDiary = () => {
                       onClick={async () => {
                         try {
                           await deleteNutritionEntryApi(entry._id || entry.id);
-                          const [dayEntries, dayTotals] = await Promise.all([
-                            loadNutritionEntries(today),
-                            loadNutritionSummary(today),
-                          ]);
-                          setEntries(dayEntries);
-                          setTotals(dayTotals);
-                        } catch {
-                          setError("Failed to delete nutrition entry.");
+                          await refreshDay();
+                        } catch (err) {
+                          setError(getApiError(err, "Failed to delete nutrition entry."));
                         }
                       }}
                       className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-[var(--bg-tertiary)]"
@@ -216,7 +266,9 @@ const NutritionDiary = () => {
                   <div className="text-[var(--text-secondary)]">{label}</div>
                   <Icon className="w-4 h-4 text-[var(--accent)]" />
                 </div>
-                <div className="text-xl font-bold text-[var(--text-primary)]">{Math.round(value)} / {target} {unit}</div>
+                <div className="text-xl font-bold text-[var(--text-primary)]">
+                  {Math.round(value)} / {target} {unit}
+                </div>
                 <div className="mt-3 h-2 rounded-full bg-[var(--bg-tertiary)] overflow-hidden">
                   <div className="h-full bg-[var(--accent)]" style={{ width: `${p}%` }} />
                 </div>

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'
 import axios from 'axios'
+import { parseUserResponse } from '../lib/healthApi'
 import { getHealthState, getWeeklyProgress } from '../lib/healthStore'
 import {
   loadNutritionSummary,
@@ -77,7 +78,7 @@ const Dashboard = () => {
         })
 
         if (response.data.status === 'success') {
-          setUser(response.data.data.user)
+          setUser(parseUserResponse(response))
         } else {
           navigate('/login')
         }
