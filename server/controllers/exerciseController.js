@@ -2,20 +2,24 @@
 const Exercise = require("../models/ExerciseModel");
 const catchAsync = require("../utils/catchAsync");
 
+const escapeRegex = (value) => {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 exports.searchExercisesLogic = async (searchTerm) => {
-  const regex = new RegExp(searchTerm, "i");
-  
+  const regex = new RegExp(escapeRegex(searchTerm), "i");
+
   return await Exercise.find({
     $or: [
       { name: regex },
       { bodyPart: regex },
-      { target: regex }
-    ]
+      { target: regex },
+    ],
   })
-  // Select the fields the LLM needs to make its decision
-  .select("name bodyPart target _id") 
-  .limit(15)
-  .lean();
+    // Select the fields the LLM needs to make its decision
+    .select("name bodyPart target id")
+    .limit(15)
+    .lean();
 };
 
 exports.getExercises = catchAsync(async (req, res, next) => {

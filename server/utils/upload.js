@@ -14,4 +14,46 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + ext);
   },
 });
-module.exports = multer({ storage });
+
+const createFileFilter = ({ extensions, mimePattern, message }) => {
+  return (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase().slice(1);
+    const hasValidExt = extensions.includes(ext);
+    const hasValidMime = mimePattern.test(file.mimetype);
+
+    if (hasValidExt && hasValidMime) {
+      return cb(null, true);
+    }
+
+    return cb(new Error(message));
+  };
+};
+
+const uploadImage = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: createFileFilter({
+    extensions: ["jpeg", "jpg", "png"],
+    mimePattern: /^image\/(jpeg|png)$/,
+    message: "Only image files (jpeg, jpg, png) are allowed.",
+  }),
+});
+
+const uploadVideo = multer({
+  storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024,
+  },
+  fileFilter: createFileFilter({
+    extensions: ["mp4", "mov", "avi", "flv"],
+    mimePattern: /^video\/(mp4|quicktime|x-msvideo|x-flv)$/,
+    message: "Only video files (mp4, mov, avi, flv) are allowed.",
+  }),
+});
+
+module.exports = {
+  uploadImage,
+  uploadVideo,
+};

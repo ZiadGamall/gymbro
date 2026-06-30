@@ -1,7 +1,7 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const Workout = require("../models/WorkoutModel");
-const User = require("../models/UserModel");
+const User = require("../models/userModel");
 
 exports.createWorkout = catchAsync(async (req, res, next) => {
   // 1. Create a copy of the incoming body data

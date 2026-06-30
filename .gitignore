@@ -6,3 +6,12 @@ build/
 .env
 server/.env
 server/uploads/
+data/
+# Python environment and cache files
+venv/
+__pycache__/
+*.pyc
+ai-services/form-checker/processed_outputs
+ai-services/form-checker/temp_videos
+*.mp4
+*.flv

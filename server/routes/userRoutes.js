@@ -1,12 +1,12 @@
 const express = require("express");
-const upload = require("../utils/upload");
+const { uploadImage } = require("../utils/upload");
 const userController = require("../controllers/userController");
 const authController = require("../controllers/authController");
 
 const router = express.Router();
 
 // Register + upload photo
-router.post("/register", upload.single("photo"), authController.register);
+router.post("/register", uploadImage.single("photo"), authController.register);
 
 // Login
 router.post("/login", authController.login);
@@ -25,7 +25,7 @@ router.patch("/reset-password", authController.resetPassword);
 router.patch(
   "/update-account",
   authController.protect,
-  upload.single("photo"),
+  uploadImage.single("photo"),
   userController.updateAccount,
 );
 
@@ -43,4 +43,8 @@ router.get(
   userController.getMe,
   userController.getUser,
 );
+
+// Logout
+router.get("/logout", authController.protect, authController.logout);
+
 module.exports = router;

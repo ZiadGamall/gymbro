@@ -1,67 +1,67 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const MealEntry = require("../models/MealEntryModel");
+const Food = require("../models/FoodModel");
+const factory = require("./handlerFactory");
 
 const getToday = () => new Date().toISOString().slice(0, 10);
 
-exports.getMealEntries = catchAsync(async (req, res) => {
-  const date = req.query.date || getToday();
-
-  const entries = await MealEntry.find({ user: req.user.id, date }).sort({
-    createdAt: -1,
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      count: entries.length,
-      entries,
-    },
-  });
-});
+// Basic CRUD operations powered by factory
+exports.getMealEntries = factory.getAllFieldFilter(MealEntry);
+exports.deleteMealEntry = factory.deleteOne(MealEntry);
 
 exports.addMealEntry = catchAsync(async (req, res, next) => {
-  const { mealType, foodName, calories, protein, carbs, fat, date } = req.body;
+  const { foodId, weightConsumed, mealType, date } = req.body;
 
-  if (!foodName || !foodName.trim()) {
-    return next(new AppError("Food name is required", 400));
+  // 1. Ensure basic input validation
+  if (!foodId) {
+    return next(new AppError("Food ID is required to log an item.", 400));
+  }
+  if (!weightConsumed || weightConsumed <= 0) {
+    return next(new AppError("Please provide a valid weight in grams.", 400));
   }
 
-  const entry = await MealEntry.create({
+  // 2. Fetch the base nutrients directly from your official Food collection
+  const foodItem = await Food.findById(foodId);
+  if (!foodItem) {
+    return next(new AppError("Food item not found in database.", 404));
+  }
+
+  // 3. Extract base values per 100g from your NutrientsSchema structure
+  const caloriesPer100g = foodItem.nutrients?.calories?.amount || 0;
+  const proteinPer100g = foodItem.nutrients?.protein?.amount || 0;
+  const carbsPer100g = foodItem.nutrients?.carbohydrates?.amount || 0;
+  const fatPer100g = foodItem.nutrients?.total_fat?.amount || 0;
+
+  // 4. Run the math scale factor (User Weight / 100g)
+  const scaleFactor = weightConsumed / 100;
+
+  const calculatedCalories = Math.round(caloriesPer100g * scaleFactor);
+  const calculatedProtein = Math.round(proteinPer100g * scaleFactor * 10) / 10;
+  const calculatedCarbs = Math.round(carbsPer100g * scaleFactor * 10) / 10;
+  const calculatedFat = Math.round(fatPer100g * scaleFactor * 10) / 10;
+
+  // 5. Create the final MealEntry log
+  const newMealEntry = await MealEntry.create({
     user: req.user.id,
-    date: date || getToday(),
-    mealType,
-    foodName,
-    calories,
-    protein,
-    carbs,
-    fat,
+    date: date || new Date().toISOString().slice(0, 10),
+    mealType: mealType || "snack",
+    foodName: `${foodItem.food} (${weightConsumed}g)`,
+    calories: calculatedCalories,
+    protein: calculatedProtein,
+    carbs: calculatedCarbs,
+    fat: calculatedFat,
   });
 
   res.status(201).json({
     status: "success",
     data: {
-      entry,
+      mealEntry: newMealEntry,
     },
   });
 });
 
-exports.deleteMealEntry = catchAsync(async (req, res, next) => {
-  const entry = await MealEntry.findOneAndDelete({
-    _id: req.params.id,
-    user: req.user.id,
-  });
-
-  if (!entry) {
-    return next(new AppError("Meal entry not found", 404));
-  }
-
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
-
+// Keeping complex calculation logic separate and custom
 exports.getNutritionSummaryToday = catchAsync(async (req, res) => {
   const date = req.query.date || getToday();
 
