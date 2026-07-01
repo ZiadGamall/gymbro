@@ -75,6 +75,15 @@ const userSchema = new mongoose.Schema({
     ref: "NutritionPlan",
   },
 
+  activeSplit: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Split",
+  },
+  currentDayIndex: {
+    type: Number,
+    default: 0,
+  },
+
   verifyToken: String,
   passwordChangedAt: Date,
   passwordResetToken: String,
