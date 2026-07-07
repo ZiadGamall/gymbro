@@ -1,5 +1,7 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import FitBotAvatar from "./FitBotAvatar";
+import FitBotMarkdown from "./FitBotMarkdown";
 
 /**
  * FitBotMessage — a single chat bubble.
@@ -35,7 +37,7 @@ function Timestamp({ ts }) {
   );
 }
 
-export default function FitBotMessage({ message, isLast = false, avatarState = "online" }) {
+export default memo(function FitBotMessage({ message, isLast = false, avatarState = "online" }) {
   const isBot = message.role === "assistant";
 
   if (isBot) {
@@ -56,7 +58,7 @@ export default function FitBotMessage({ message, isLast = false, avatarState = "
 
         <div style={{ maxWidth: "82%" }}>
           <div className="fitbot-bubble fitbot-bubble--bot">
-            {message.content}
+            <FitBotMarkdown content={message.content} />
           </div>
           <Timestamp ts={message.ts} />
         </div>
@@ -80,4 +82,4 @@ export default function FitBotMessage({ message, isLast = false, avatarState = "
       </div>
     </motion.div>
   );
-}
+});

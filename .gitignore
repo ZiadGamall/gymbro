@@ -15,3 +15,9 @@ ai-services/form-checker/processed_outputs
 ai-services/form-checker/temp_videos
 *.mp4
 *.flv
+playwright-report/
+playwright-report.zip
+test-results/
+.stack/
+ai-services/form-checker/models/
+ai-services/*/venv/

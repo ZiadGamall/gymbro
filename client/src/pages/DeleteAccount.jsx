@@ -1,201 +1,162 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, Trash2, Eye, EyeOff } from 'lucide-react'
-import axios from 'axios'
-import { getApiError } from '../lib/healthApi'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AlertTriangle, Eye, EyeOff, Loader2, Trash2 } from "lucide-react";
+import { getApiError } from "../lib/healthApi";
 
 const DeleteAccount = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [confirmed, setConfirmed] = useState(false)
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      navigate('/login')
-    }
-  }, [navigate])
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
+    e.preventDefault();
     if (!confirmed) {
-      setError('Please confirm that you want to delete your account')
-      return
+      setError("Please confirm that you understand this action cannot be undone.");
+      return;
     }
 
-    setLoading(true)
-    setError('')
-    setSuccess('')
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await axios.delete('/api/v1/users/delete-account', {
+      const token = localStorage.getItem("token");
+      await axios.delete("/api/v1/users/delete-account", {
+        headers: { Authorization: `Bearer ${token}` },
         data: formData,
-      })
-
-      setSuccess('Account deleted successfully!')
-      localStorage.removeItem('token')
-      
-      setTimeout(() => {
-        navigate('/')
-      }, 2000)
+      });
+      setSuccess("Account deleted successfully. Redirecting…");
+      localStorage.removeItem("token");
+      setTimeout(() => navigate("/"), 2000);
     } catch (err) {
-      setError(getApiError(err, 'Account deletion failed. Please try again.'))
+      setError(getApiError(err, "Failed to delete account. Please check your credentials."));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-lg rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center">
-              <AlertTriangle className="h-6 w-6 text-red-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Delete Account</h1>
+    <div className="page-shell">
+      <div className="page-content max-w-md">
+        <div className="card-surface p-6 sm:p-8">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--border)]">
+            <div className="w-10 h-10 rounded-xl bg-[var(--danger)]/15 border border-[var(--danger)]/25 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-[var(--danger)]" />
+            </div>
+            <div>
+              <h1 className="page-title text-xl">Delete Account</h1>
+              <p className="page-subtitle text-xs">This action is permanent</p>
             </div>
           </div>
 
-          <div className="px-6 py-6">
-            <div className="mb-6">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-start">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-sm font-medium text-red-800 mb-2">
-                      Warning: This action cannot be undone
-                    </h3>
-                    <p className="text-sm text-red-700">
-                      Deleting your account will permanently remove all your data including:
-                    </p>
-                    <ul className="mt-2 text-sm text-red-700 list-disc list-inside">
-                      <li>Your profile information</li>
-                      <li>Workout history</li>
-                      <li>Nutrition data</li>
-                      <li>Account settings</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+          <div className="alert-danger mb-6">
+            <p className="font-semibold text-sm mb-2">Warning: This cannot be undone</p>
+            <p className="text-sm opacity-90 mb-2">
+              Deleting your account permanently removes:
+            </p>
+            <ul className="text-sm opacity-90 list-disc list-inside space-y-1">
+              <li>Profile and settings</li>
+              <li>Workout history</li>
+              <li>Nutrition logs</li>
+              <li>Saved plans and splits</li>
+            </ul>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && <div className="alert-danger">{error}</div>}
+            {success && <div className="alert-success">{success}</div>}
+
+            <div>
+              <label htmlFor="email" className="field-label">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="input-field w-full mt-1.5"
+                placeholder="Enter your email"
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                  {success}
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
+            <div>
+              <label htmlFor="password" className="field-label">Password</label>
+              <div className="relative mt-1.5">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  value={formData.email}
+                  value={formData.password}
                   onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                  placeholder="Enter your email"
+                  className="input-field w-full pr-10"
+                  placeholder="Enter your password"
                 />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="mt-1 relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  id="confirmed"
-                  type="checkbox"
-                  checked={confirmed}
-                  onChange={(e) => setConfirmed(e.target.checked)}
-                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                />
-                <label htmlFor="confirmed" className="ml-2 block text-sm text-gray-900">
-                  I understand that this action cannot be undone and I want to permanently delete my account
-                </label>
-              </div>
-
-              <div className="flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => navigate('/account-settings')}
-                  className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || !confirmed}
-                  className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Account
-                    </>
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                id="confirmed"
+                type="checkbox"
+                checked={confirmed}
+                onChange={(e) => setConfirmed(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-[var(--border)] accent-[var(--danger)]"
+              />
+              <span className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                I understand this action is permanent and I want to delete my account
+              </span>
+            </label>
+
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => navigate("/account-settings")}
+                className="btn-ghost px-5 py-2.5 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !confirmed}
+                className="btn-danger inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Deleting…
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Delete Account
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DeleteAccount
+export default DeleteAccount;

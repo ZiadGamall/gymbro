@@ -178,34 +178,25 @@ const AccountSettings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="page-shell">
+      <div className="page-content max-w-4xl">
         <div className="mb-8">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 border border-[var(--accent)]/25 flex items-center justify-center">
               <User className="w-5 h-5 text-[var(--accent)]" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-[var(--text-primary)]">Account Settings</h1>
-              <p className="text-[var(--text-secondary)]">Update your profile details and photo.</p>
+              <h1 className="page-title">Account Settings</h1>
+              <p className="page-subtitle">Update your profile details and photo.</p>
             </div>
           </div>
         </div>
 
         <div className="grid gap-6">
-          {(error || success) && (
-            <div
-              className={`rounded-2xl border px-4 py-3 ${
-                error
-                  ? 'bg-red-500/10 border-red-500/30 text-red-200'
-                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-              }`}
-            >
-              {error || success}
-            </div>
-          )}
+          {error && <div className="alert-danger">{error}</div>}
+          {success && <div className="alert-success">{success}</div>}
 
-          <div className="card p-8">
+          <div className="card-surface p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center gap-6">
                 <div className="flex items-center gap-4">

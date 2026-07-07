@@ -164,9 +164,16 @@ const Train = () => {
           </h1>
         </div>
         <Link
+          to="/splits"
+          className="btn-ghost flex items-center gap-2"
+          aria-label="Browse splits"
+        >
+          Splits
+        </Link>
+        <Link
           to="/workouts"
           className="btn-ghost flex items-center gap-2"
-          aria-label="Open Workout Planner"
+          aria-label="Log workout"
         >
           <Plus className="w-4 h-4" strokeWidth={2} />
           New
@@ -343,7 +350,7 @@ const Train = () => {
                 <Dumbbell className="empty-state-icon" strokeWidth={1.5} />
                 <p className="empty-state-title">Nothing logged today</p>
                 <p className="empty-state-body">
-                  Log a session in the Workout Planner — it will appear here
+                  Log a session in the Workout Logger — it will appear here
                   automatically.
                 </p>
                 <Link
@@ -358,20 +365,20 @@ const Train = () => {
           )}
         </section>
 
-        {/* ── CTA bridge to legacy WorkoutPlanner ─────────────────────── */}
+        {/* ── CTA bridge to Workout Logger ─────────────────────────────── */}
         <div className="card-elevated flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="font-display text-[14px] font-semibold text-primary">
-              Workout Planner
+              Workout Logger
             </p>
             <p className="font-body text-[11px] text-secondary mt-[2px] truncate">
-              Build plans, log sets, track history
+              Log sets, track history, finish sessions
             </p>
           </div>
           <Link
             to="/workouts"
             className="btn-filled flex items-center gap-2 flex-shrink-0"
-            aria-label="Open Workout Planner"
+            aria-label="Open Workout Logger"
           >
             Open
             <ArrowRight className="w-4 h-4" strokeWidth={2} />

@@ -15,6 +15,10 @@ app = FastAPI()
 OUTPUT_DIR = "processed_outputs"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+@app.get("/health")
+async def health():
+    return {"status": "ok", "service": "GymBro Form Checker"}
+
 @app.post("/analyze-form")
 async def analyze_form(mode: str = Query("Beginner"), video: UploadFile = File(...)):
     try:

@@ -154,10 +154,6 @@ const Eat = () => {
             </Link>
           </div>
         </div>
-
-        <p className="font-body text-[11px] text-tertiary text-center pb-2">
-          Native food diary coming in Day 3.
-        </p>
       </div>
     </div>
   );

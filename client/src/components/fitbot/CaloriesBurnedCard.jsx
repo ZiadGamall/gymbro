@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Flame, Loader2 } from "lucide-react";
-import { estimateCaloriesBurned, getApiError } from "../../lib/healthApi";
+import { useEffect, useState } from "react";
+import { Flame, Loader2, History } from "lucide-react";
+import { estimateCaloriesBurned, getApiError, loadCurrentUser } from "../../lib/healthApi";
+
+const HISTORY_KEY = "gymbro.calorie.history.v1";
 
 const DEFAULT_FORM = {
   weight: "",
@@ -16,6 +18,27 @@ export default function CaloriesBurnedCard() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    try {
+      setHistory(JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"));
+    } catch {
+      setHistory([]);
+    }
+    loadCurrentUser()
+      .then((user) => {
+        if (!user) return;
+        setForm((prev) => ({
+          ...prev,
+          weight: user.weight || prev.weight,
+          height: user.height || prev.height,
+          age: user.age || prev.age,
+          gender: user.gender || prev.gender,
+        }));
+      })
+      .catch(() => {});
+  }, []);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -53,6 +76,10 @@ export default function CaloriesBurnedCard() {
       };
       const data = await estimateCaloriesBurned(payload);
       setResult(data);
+      const entry = { ...payload, ...data, savedAt: new Date().toISOString() };
+      const next = [entry, ...history].slice(0, 10);
+      setHistory(next);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
     } catch (err) {
       setError(getApiError(err, "Could not calculate — backend unavailable."));
     } finally {
@@ -278,6 +305,25 @@ export default function CaloriesBurnedCard() {
               {result.notes}
             </p>
           )}
+        </div>
+      )}
+
+      {history.length > 0 && (
+        <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+            <History size={14} color="var(--text-tertiary)" />
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Recent estimates
+            </p>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {history.slice(0, 3).map((entry, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-secondary)" }}>
+                <span>{entry.duration} min · {entry.heart_rate ?? entry.heartRate} bpm</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--warning)" }}>{entry.caloriesBurned} kcal</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

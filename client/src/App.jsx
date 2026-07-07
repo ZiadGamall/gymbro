@@ -17,8 +17,13 @@ import DeleteAccount    from "./pages/DeleteAccount";
 import Home             from "./pages/Home";
 import Onboarding       from "./pages/Onboarding";
 import NutritionDiary   from "./pages/NutritionDiary";
-import WorkoutPlanner   from "./pages/WorkoutPlanner";
 import ProgressHub      from "./pages/ProgressHub";
+import FormChecker      from "./pages/FormChecker";
+import SplitsHub        from "./pages/SplitsHub";
+import SleepRecovery    from "./pages/SleepRecovery";
+import WorkoutLogger    from "./pages/WorkoutLogger";
+import WorkoutBuilder   from "./pages/WorkoutBuilder";
+import ProfileHub       from "./pages/ProfileHub";
 import MuscleLab        from "./pages/MuscleLab";
 
 // ── Day 2: new shell ──────────────────────────────────────────────────────────
@@ -82,7 +87,12 @@ function AppShell() {
 
         {/* ── Legacy routes ─────────────────────────────────────────────── */}
         <Route path="/dashboard"         element={<Dashboard />}       />
-        <Route path="/workouts"          element={<WorkoutPlanner />}  />
+        <Route path="/workouts"          element={<WorkoutLogger />}   />
+        <Route path="/workouts/build"    element={<WorkoutBuilder />}  />
+        <Route path="/splits"            element={<SplitsHub />}       />
+        <Route path="/form-check"        element={<FormChecker />}     />
+        <Route path="/sleep"             element={<SleepRecovery />}   />
+        <Route path="/profile"           element={<ProfileHub />}      />
         <Route path="/nutrition"         element={<NutritionDiary />}  />
         <Route path="/progress"          element={<ProgressHub />}     />
         <Route path="/muscle-lab"        element={<MuscleLab />}       />

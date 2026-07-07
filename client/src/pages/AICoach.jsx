@@ -1,83 +1,70 @@
-import { CoachNavBar }        from '../components/coach/CoachNavBar';
-import { CoachContextBar }    from '../components/coach/CoachContextBar';
-import { DailyBriefCard }     from '../components/coach/DailyBriefCard';
-import { FitnessScoreCard }   from '../components/coach/FitnessScoreCard';
-import { CoachInsightCard }   from '../components/coach/CoachInsightCard';
-import { QuickActionChipRow } from '../components/coach/QuickActionChipRow';
-import { C }                  from '../mocks/coachData';
-import CaloriesBurnedCard     from '../components/fitbot/CaloriesBurnedCard';
+import { Link } from "react-router-dom";
+import { Activity, Layers, Moon, ScanLine, User } from "lucide-react";
+import { CoachNavBar } from "../components/coach/CoachNavBar";
+import { CoachContextBar } from "../components/coach/CoachContextBar";
+import CaloriesBurnedCard from "../components/fitbot/CaloriesBurnedCard";
+import { useFitBot } from "../components/fitbot/FitBotContext";
 
-// Stagger delays — each card enters slightly after the previous
-const DELAYS = {
-  brief:   0.05,
-  score:   0.12,
-  insight: 0.19,
-  chips:   0.26,
-};
+const TOOLS = [
+  { to: "/form-check", label: "Form Checker", icon: ScanLine, desc: "AI video analysis" },
+  { to: "/splits", label: "Training Splits", icon: Layers, desc: "Browse & save programs" },
+  { to: "/sleep", label: "Sleep & Recovery", icon: Moon, desc: "Wearable sync & readiness" },
+  { to: "/profile", label: "My Profile", icon: User, desc: "Goals, logs & saved plans" },
+];
 
 export default function AICoach() {
+  const { open, sendQuickAction } = useFitBot();
+
   return (
-    <div
-      className="page-shell"
-      style={{
-        background: C.void,
-        fontFamily: "'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      {/* ── Sticky chrome ── */}
+    <div className="page-shell">
       <CoachNavBar />
       <CoachContextBar />
 
-      {/* ── Page header ── */}
-      <div style={{ padding: '20px 20px 4px' }}>
-        <p
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: C.textTertiary,
-            marginBottom: 4,
-          }}
-        >
-          AI Coach
-        </p>
-        <h1
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 24,
-            fontWeight: 700,
-            letterSpacing: '-0.03em',
-            color: C.textPrimary,
-            lineHeight: 1.2,
-            margin: 0,
-          }}
-        >
-          FitBot Hub
-        </h1>
-      </div>
+      <div className="page-content max-w-5xl !pt-4 !pb-6">
+        <p className="section-title mb-1">AI Coach</p>
+        <h1 className="page-title mb-6">FitBot Hub</h1>
 
-      {/* ── Card grid ── */}
-      <div
-        style={{
-          padding: '16px 20px 20px',
-          display: 'grid',
-          gap: 14,
-          /* Single column on mobile, 2 columns on tablet+, 3 on wide desktop */
-          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))',
-        }}
-      >
-        <DailyBriefCard     animDelay={DELAYS.brief}   />
-        <FitnessScoreCard   animDelay={DELAYS.score}   />
-        <CoachInsightCard   animDelay={DELAYS.insight} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="card-surface sm:col-span-2">
+            <p className="font-body text-sm text-secondary mb-3">
+              Chat with FitBot for personalized workout, nutrition, and recovery guidance.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn-filled" onClick={open}>Open FitBot Chat</button>
+              <button type="button" className="btn-ghost" onClick={() => { open(); sendQuickAction("Give me today's workout recommendation."); }}>
+                Today&apos;s workout
+              </button>
+              <button type="button" className="btn-ghost" onClick={() => { open(); sendQuickAction("Review my nutrition targets and suggest meals."); }}>
+                Meal guidance
+              </button>
+            </div>
+          </div>
 
-        {/* CaloriesBurnedCard — same grid cell width */}
-        <CaloriesBurnedCard />
+          <CaloriesBurnedCard />
 
-        {/* QuickActionChipRow spans full width */}
-        <div style={{ gridColumn: '1 / -1' }}>
-          <QuickActionChipRow animDelay={DELAYS.chips} />
+          {TOOLS.map(({ to, label, icon: Icon, desc }) => (
+            <Link key={to} to={to} className="card-surface hover:border-accent/40 transition-colors group">
+              <div className="flex items-start gap-3">
+                <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-elevated text-accent group-hover:bg-accent/10">
+                  <Icon className="w-5 h-5" strokeWidth={1.8} />
+                </span>
+                <div>
+                  <p className="font-display font-semibold text-primary">{label}</p>
+                  <p className="font-body text-xs text-secondary mt-0.5">{desc}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+
+          <Link to="/workouts" className="card-surface hover:border-accent/40 transition-colors group sm:col-span-2">
+            <div className="flex items-center gap-3">
+              <Activity className="w-5 h-5 text-accent" />
+              <div>
+                <p className="font-display font-semibold text-primary">Log a workout session</p>
+                <p className="font-body text-xs text-secondary">Track sets, reps, weight, and finish your session</p>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </div>

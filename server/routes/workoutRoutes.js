@@ -10,4 +10,10 @@ router.post(
   workoutController.createWorkout,
 );
 
+router.get(
+  "/my-workouts",
+  authController.protect,
+  workoutController.getMyWorkouts,
+);
+
 module.exports = router;

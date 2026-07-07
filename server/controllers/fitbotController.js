@@ -12,7 +12,14 @@ const chatWithFitbot = catchAsync(async (req, res, next) => {
   }
 
   const onboarding = await OnboardingProfile.findOne({ user: user._id });
-  const reply = await generateFitbotResponse(user, onboarding, history, message);
+  let reply;
+  try {
+    reply = await generateFitbotResponse(user, onboarding, history, message);
+  } catch (err) {
+    console.error("[FitBot] generation failed:", err.message);
+    reply =
+      "I'm having a brief connection issue reaching my training brain. Please ask again in a moment — your chat history is saved.";
+  }
   return res.status(200).json({ reply });
 });
 

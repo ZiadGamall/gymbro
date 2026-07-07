@@ -12,7 +12,19 @@
     "client:preview": "vite preview --config client/vite.config.js",
     "frontend:dev": "npm run client:dev",
     "frontend:build": "npm run client:build",
-    "frontend:preview": "npm run client:preview"
+    "frontend:preview": "npm run client:preview",
+    "smoke-test": "node scripts/smoke-test.js",
+    "playwright:install": "playwright install chromium",
+    "playwright:verify": "node scripts/verify-playwright.js",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test e2e/smoke-home.spec.js",
+    "stack:start": "node scripts/start-stack.js",
+    "stack:ensure": "node scripts/ensure-stack.js",
+    "stack:health": "node scripts/health-check-stack.js",
+    "demo:record": "playwright test --config playwright.demo.config.js",
+    "demo:gallery": "node -e \"require('./e2e/helpers/demo').buildGallery()\"",
+    "release:validate": "node scripts/release-validate.js",
+    "test:e2e:ai": "node scripts/ensure-stack.js && node scripts/health-check-stack.js && playwright test e2e/ai-smoke.spec.js"
   },
   "keywords": [],
   "author": "",
@@ -43,6 +55,7 @@
     "validator": "^13.15.26"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/node": "^25.3.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",

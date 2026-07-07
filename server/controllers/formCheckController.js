@@ -43,3 +43,16 @@ exports.analyzeUserVideo = catchAsync(async (req, res, next) => {
     removeUploadedFile(req.file?.path);
   }
 });
+
+exports.getFormCheckHistory = catchAsync(async (req, res) => {
+  const records = await formCheckHistory
+    .find({ user: req.user.id })
+    .sort({ createdAt: -1 })
+    .limit(50);
+
+  res.status(200).json({
+    status: "success",
+    results: records.length,
+    data: records,
+  });
+});

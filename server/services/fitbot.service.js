@@ -1,7 +1,36 @@
 const Groq = require("groq-sdk");
 const toolHandlers = require("./fitbotTools");
+const AppError = require("../utils/appError");
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function groqChatWithRetry(params, maxAttempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await groq.chat.completions.create(params);
+    } catch (err) {
+      lastError = err;
+      const status = err?.status || err?.statusCode;
+      const retryable = !status || status === 429 || status >= 500;
+      if (!retryable || attempt === maxAttempts) break;
+      await sleep(600 * attempt);
+    }
+  }
+  const status = lastError?.status || lastError?.statusCode;
+  if (status === 429) {
+    throw new AppError(
+      "FitBot is temporarily unavailable due to API quota limits. Please try again later.",
+      429,
+    );
+  }
+  throw new AppError(
+    "FitBot is temporarily unavailable. Please try again in a moment.",
+    502,
+  );
+}
 
 // 1. SYSTEM PROMPT BUILDER
 const buildSystemPrompt = (user, onboarding) => {
@@ -384,7 +413,7 @@ const generateFitbotResponse = async (
   let responseMessage;
 
   while (processingTools) {
-    const response = await groq.chat.completions.create({
+    const response = await groqChatWithRetry({
       model: "openai/gpt-oss-120b",
       messages,
       tools: tools,
@@ -407,7 +436,12 @@ const generateFitbotResponse = async (
     for (const toolCall of responseMessage.tool_calls) {
       console.log("Tool Call: ", toolCall);
       const functionName = toolCall.function.name;
-      const functionArgs = JSON.parse(toolCall.function.arguments);
+      let functionArgs = {};
+      try {
+        functionArgs = JSON.parse(toolCall.function.arguments || "{}");
+      } catch {
+        functionArgs = {};
+      }
       let functionResult;
 
       // Delegate data fetching/creation straight to our controller bridges

@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Activity,
-  BarChart3,
   ClipboardCheck,
   Dumbbell,
-  Flame,
   Home,
+  Layers,
+  LayoutDashboard,
   LogOut,
   Menu,
+  Moon,
   Search,
+  Settings2,
   Sparkles,
+  TrendingUp,
   User,
   X,
 } from "lucide-react";
@@ -89,11 +91,15 @@ const Navbar = () => {
     { path: "/food-search", label: "Foods", icon: Search },
     ...(isLoggedIn
       ? [
-          { path: "/dashboard", label: "Today", icon: BarChart3 },
-          { path: "/onboarding", label: "Setup", icon: ClipboardCheck },
-          { path: "/workouts", label: "Workouts", icon: Activity },
-          { path: "/muscle-lab", label: "Muscle Lab", icon: Flame },
-          { path: "/progress", label: "Progress", icon: BarChart3 },
+          { path: "/dashboard", label: "Today", icon: LayoutDashboard },
+          { path: "/workouts", label: "Log Workout", icon: Dumbbell },
+          { path: "/muscle-lab", label: "FitBot", icon: Sparkles },
+          { path: "/splits", label: "Splits", icon: Layers },
+          { path: "/progress", label: "Progress", icon: TrendingUp },
+          { path: "/profile", label: "Profile", icon: User },
+          { path: "/form-check", label: "Form Check", icon: ClipboardCheck },
+          { path: "/sleep", label: "Recovery", icon: Moon },
+          { path: "/onboarding", label: "Setup", icon: Settings2 },
         ]
       : []),
   ];

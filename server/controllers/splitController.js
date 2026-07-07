@@ -2,6 +2,7 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const Split = require("../models/splitModel");
 const User = require("../models/userModel");
+const Exercise = require("../models/ExerciseModel");
 const factory = require("./handlerFactory");
 
 // 1. Standard Factory Operations
@@ -96,48 +97,73 @@ exports.setActiveSplit = catchAsync(async (req, res, next) => {
   });
 });
 
+async function enrichWorkoutExercises(workoutDoc) {
+  if (!workoutDoc) return null;
+  const workout = workoutDoc.toObject ? workoutDoc.toObject() : { ...workoutDoc };
+  const ids = [
+    ...new Set((workout.exercises || []).map((ex) => ex.exerciseId).filter(Boolean)),
+  ];
+  const found = ids.length
+    ? await Exercise.find({ id: { $in: ids } })
+        .select("id name bodyPart target gifUrl equipment instructionSteps")
+        .lean()
+    : [];
+  const byId = Object.fromEntries(found.map((ex) => [ex.id, ex]));
+  workout.exercises = (workout.exercises || []).map((ex) => ({
+    ...ex,
+    exerciseName: ex.exerciseName || byId[ex.exerciseId]?.name || ex.name,
+    exercise: byId[ex.exerciseId] || null,
+  }));
+  return workout;
+}
+
 // Get today's workout from active split
-exports.getTodayWorkout = catchAsync(async (req, res, next) => {
+exports.getTodayWorkout = catchAsync(async (req, res) => {
   const user = await User.findById(req.user._id).populate({
     path: "activeSplit",
     populate: {
       path: "days",
-      populate: {
-        path: "exercises.exerciseId",
-        model: "Exercise",
-        select: "name bodyPart target gifUrl equipment instructionSteps",
-      },
+      select: "name numberOfExercises exercises",
     },
   });
 
-  if (!user.activeSplit) {
-    return next(
-      new AppError(
-        "You don't have an active split. Please set one first.",
-        404,
-      ),
-    );
+  if (!user?.activeSplit) {
+    return res.status(200).json({
+      status: "success",
+      data: {
+        splitName: null,
+        currentDay: null,
+        totalDays: 0,
+        workout: null,
+      },
+    });
   }
 
   const split = user.activeSplit;
-  const todayWorkout = split.days[user.currentDayIndex];
+  const dayIndex = user.currentDayIndex ?? 0;
+  const todayWorkout = split.days?.[dayIndex];
 
   if (!todayWorkout) {
-    return next(
-      new AppError(
-        "No workout found for today's index. Please reset your split.",
-        400,
-      ),
-    );
+    return res.status(200).json({
+      status: "success",
+      data: {
+        splitName: split.program,
+        currentDay: dayIndex + 1,
+        totalDays: split.days?.length || 0,
+        workout: null,
+      },
+    });
   }
+
+  const workout = await enrichWorkoutExercises(todayWorkout);
 
   res.status(200).json({
     status: "success",
     data: {
       splitName: split.program,
-      currentDay: user.currentDayIndex + 1,
+      currentDay: dayIndex + 1,
       totalDays: split.days.length,
-      workout: todayWorkout,
+      workout,
     },
   });
 });
@@ -147,7 +173,11 @@ exports.advanceSplitDay = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id).populate("activeSplit");
 
   if (!user.activeSplit) {
-    return next(new AppError("You don't have an active split.", 404));
+    return res.status(200).json({
+      status: "success",
+      message: "No active split to advance.",
+      data: { currentDayIndex: user.currentDayIndex ?? 0 },
+    });
   }
 
   const totalDays = user.activeSplit.days.length;

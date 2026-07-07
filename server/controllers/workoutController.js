@@ -29,3 +29,18 @@ exports.createWorkout = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getMyWorkouts = catchAsync(async (req, res) => {
+  const user = await User.findById(req.user._id).populate({
+    path: "workoutList",
+    select: "name numberOfExercises exercises createdAt",
+  });
+
+  res.status(200).json({
+    status: "success",
+    results: user?.workoutList?.length || 0,
+    data: {
+      workouts: user?.workoutList || [],
+    },
+  });
+});

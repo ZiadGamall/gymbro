@@ -89,42 +89,50 @@ const ProgressHub = () => {
   const maxCalories = Math.max(1, ...weekly.map((day) => Number(day.calories || 0)));
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] px-4 py-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="card">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Progress Hub</h1>
-          <p className="text-[var(--text-secondary)] mt-1">Weekly performance snapshot for nutrition and workouts.</p>
-          {error && <p className="text-sm text-red-300 mt-2">{error}</p>}
+    <div className="page-shell">
+      <div className="page-content max-w-7xl space-y-6">
+        <div className="card-surface">
+          <h1 className="page-title">Progress Hub</h1>
+          <p className="page-subtitle">Weekly performance snapshot for nutrition and workouts.</p>
+          {error && <div className="alert-danger mt-4">{error}</div>}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="card">
+          {loading ? (
+            Array.from({ length: 4 }, (_, i) => (
+              <div key={i} className="card-surface skeleton-block h-28" />
+            ))
+          ) : (
+          <>
+          <div className="card-surface">
             <div className="text-[var(--text-secondary)] text-sm">Completed workouts</div>
             <div className="text-3xl font-bold text-[var(--text-primary)] mt-1">{completedWorkouts}</div>
             <div className="text-xs text-[var(--text-secondary)] mt-2">last 7 days</div>
           </div>
 
-          <div className="card">
+          <div className="card-surface">
             <div className="text-[var(--text-secondary)] text-sm">7-day active days</div>
             <div className="text-3xl font-bold text-[var(--text-primary)] mt-1">{adherence}/7</div>
             <div className="text-xs text-[var(--text-secondary)] mt-2">days with workouts</div>
           </div>
 
-          <div className="card">
+          <div className="card-surface">
             <div className="text-[var(--text-secondary)] text-sm">Today calories</div>
             <div className="text-3xl font-bold text-[var(--text-primary)] mt-1">{Math.round(today.calories)}</div>
             <div className="text-xs text-[var(--text-secondary)] mt-2">target {onboarding.calorieTarget} kcal</div>
           </div>
 
-          <div className="card">
+          <div className="card-surface">
             <div className="text-[var(--text-secondary)] text-sm">Current plan</div>
             <div className="text-xl font-bold text-[var(--text-primary)] mt-1 capitalize">{onboarding.level}</div>
             <div className="text-xs text-[var(--text-secondary)] mt-2 capitalize">goal: {(onboarding.goal || "general_health").replace("_", " ")}</div>
           </div>
+          </>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 card">
+          <div className="lg:col-span-2 card-surface">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="w-5 h-5 text-[var(--accent)]" />
               <h2 className="font-semibold text-[var(--text-primary)]">Calories in last 7 days</h2>
@@ -166,7 +174,7 @@ const ProgressHub = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="card">
+            <div className="card-surface">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold mb-2">
                 <CalendarCheck2 className="w-4 h-4 text-[var(--accent)]" />
                 Week checkpoint
@@ -176,7 +184,7 @@ const ProgressHub = () => {
               </p>
             </div>
 
-            <div className="card">
+            <div className="card-surface">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold mb-2">
                 <Flame className="w-4 h-4 text-orange-400" />
                 Nutrition signal
@@ -186,7 +194,7 @@ const ProgressHub = () => {
               </p>
             </div>
 
-            <div className="card">
+            <div className="card-surface">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold mb-2">
                 <Trophy className="w-4 h-4 text-yellow-400" />
                 Milestone

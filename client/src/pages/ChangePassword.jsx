@@ -83,28 +83,17 @@ const ChangePassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="page-shell">
+      <div className="page-content max-w-2xl">
         <div className="mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-[var(--text-primary)]">Change Password</h1>
-            <p className="text-[var(--text-secondary)]">Update your password securely.</p>
-          </div>
+          <h1 className="page-title">Change Password</h1>
+          <p className="page-subtitle">Update your password securely.</p>
         </div>
 
-        {(error || success) && (
-          <div
-            className={`rounded-2xl border px-4 py-3 mb-6 ${
-              error
-                ? 'bg-red-500/10 border-red-500/30 text-red-200'
-                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-            }`}
-          >
-            {error || success}
-          </div>
-        )}
+        {error && <div className="alert-danger mb-6">{error}</div>}
+        {success && <div className="alert-success mb-6">{success}</div>}
 
-        <div className="card p-8">
+        <div className="card-surface p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-[var(--text-primary)] font-medium mb-2">

@@ -1,0 +1,221 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Target,
+  Dumbbell,
+  Layers,
+  Utensils,
+  ClipboardList,
+  Loader2,
+  Pencil,
+} from "lucide-react";
+import {
+  loadCurrentUser,
+  loadMyWorkouts,
+  loadOnboarding,
+  loadNutritionEntries,
+  loadSavedSplits,
+  loadWorkoutSessions,
+} from "../lib/healthApi";
+
+const GOAL_LABELS = {
+  general_health: "General health",
+  weight_loss: "Weight loss",
+  muscle_gain: "Build muscle",
+  muscle_tone: "Muscle tone",
+  endurance: "Endurance",
+};
+
+const ProfileHub = () => {
+  const navigate = useNavigate();
+  const [tab, setTab] = useState("overview");
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [onboarding, setOnboarding] = useState(null);
+  const [splits, setSplits] = useState([]);
+  const [workouts, setWorkouts] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [meals, setMeals] = useState([]);
+  const today = new Date().toISOString().slice(0, 10);
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+      return;
+    }
+    Promise.all([
+      loadCurrentUser(),
+      loadOnboarding(),
+      loadSavedSplits().catch(() => []),
+      loadMyWorkouts().catch(() => []),
+      loadWorkoutSessions().catch(() => []),
+      loadNutritionEntries(today).catch(() => []),
+    ])
+      .then(([u, ob, sp, wo, se, me]) => {
+        setUser(u);
+        setOnboarding(ob);
+        setSplits(sp);
+        setWorkouts(wo);
+        setSessions(se.slice(0, 20));
+        setMeals(me);
+      })
+      .finally(() => setLoading(false));
+  }, [navigate, today]);
+
+  const tabs = [
+    { id: "overview", label: "Overview", icon: Target },
+    { id: "splits", label: "Splits", icon: Layers },
+    { id: "workouts", label: "Workouts", icon: Dumbbell },
+    { id: "logs", label: "Workout logs", icon: ClipboardList },
+    { id: "meals", label: "Meals", icon: Utensils },
+  ];
+
+  if (loading) {
+    return (
+      <div className="page-shell flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 text-accent animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-shell px-4 py-8 max-w-5xl mx-auto">
+      <header className="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <p className="section-title">Your fitness profile</p>
+          <h1 className="font-display text-2xl font-bold text-primary">
+            {user?.firstName || user?.username || "Athlete"}
+          </h1>
+          <p className="font-body text-sm text-secondary mt-1">{user?.email}</p>
+        </div>
+        <Link to="/account-settings" className="btn-ghost flex items-center gap-2">
+          <Pencil className="w-4 h-4" /> Edit account
+        </Link>
+      </header>
+
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
+        {tabs.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              tab === id ? "bg-accent text-canvas" : "bg-elevated text-secondary hover:text-primary"
+            }`}
+          >
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "overview" && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="card-surface">
+            <h2 className="font-display font-semibold text-primary mb-3">Goals & targets</h2>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between"><dt className="text-tertiary">Overall goal</dt><dd className="text-primary capitalize">{GOAL_LABELS[onboarding?.goal] || onboarding?.goal || "—"}</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Level</dt><dd className="text-primary capitalize">{onboarding?.level || "—"}</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Calorie goal</dt><dd className="font-mono text-primary">{onboarding?.calorieTarget || "—"} kcal</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Protein goal</dt><dd className="font-mono text-primary">{onboarding?.proteinTarget || "—"} g</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Fat goal</dt><dd className="font-mono text-primary">{onboarding?.fatTarget || "—"} g</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Limitations</dt><dd className="text-primary text-right max-w-[60%]">{onboarding?.limitations || "None"}</dd></div>
+            </dl>
+            <Link to="/onboarding" className="btn-ghost mt-4 inline-flex">Update onboarding →</Link>
+          </div>
+          <div className="card-surface">
+            <h2 className="font-display font-semibold text-primary mb-3">Body metrics</h2>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between"><dt className="text-tertiary">Height</dt><dd className="font-mono text-primary">{user?.height ? `${user.height} cm` : "—"}</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Weight</dt><dd className="font-mono text-primary">{user?.weight ? `${user.weight} kg` : "—"}</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Gender</dt><dd className="text-primary capitalize">{user?.gender || "—"}</dd></div>
+            </dl>
+          </div>
+        </div>
+      )}
+
+      {tab === "splits" && (
+        <div className="space-y-3">
+          {splits.length === 0 ? (
+            <div className="card-surface empty-state">
+              <Layers className="empty-state-icon" />
+              <p className="empty-state-title">No saved splits</p>
+              <Link to="/splits" className="btn-filled mt-3">Browse splits</Link>
+            </div>
+          ) : (
+            splits.map((split) => (
+              <div key={split._id} className="session-row">
+                <p className="font-medium text-primary">{split.program}</p>
+                <p className="text-xs text-tertiary">{split.days?.length || 0} days</p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {tab === "workouts" && (
+        <div className="space-y-3">
+          {workouts.length === 0 ? (
+            <div className="card-surface empty-state">
+              <Dumbbell className="empty-state-icon" />
+              <p className="empty-state-title">No saved workouts</p>
+              <Link to="/workouts/build" className="btn-filled mt-3">Build a workout</Link>
+            </div>
+          ) : (
+            workouts.map((wo) => (
+              <div key={wo._id} className="card-surface">
+                <p className="font-medium text-primary">{wo.name}</p>
+                <p className="text-xs text-tertiary mt-1">{wo.exercises?.length || wo.numberOfExercises || 0} exercises</p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {tab === "logs" && (
+        <div className="space-y-2">
+          {sessions.length === 0 ? (
+            <div className="card-surface empty-state">
+              <ClipboardList className="empty-state-icon" />
+              <p className="empty-state-title">No workout logs yet</p>
+              <Link to="/workouts" className="btn-filled mt-3">Log a workout</Link>
+            </div>
+          ) : (
+            sessions.map((s) => (
+              <div key={s.id || s._id} className="session-row">
+                <div>
+                  <p className="font-medium text-primary">{s.planName}</p>
+                  <p className="text-xs text-tertiary">{s.date} · {s.durationMin} min</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {tab === "meals" && (
+        <div className="space-y-2">
+          {meals.length === 0 ? (
+            <div className="card-surface empty-state">
+              <Utensils className="empty-state-icon" />
+              <p className="empty-state-title">No meals logged today</p>
+              <Link to="/nutrition" className="btn-filled mt-3">Log nutrition</Link>
+            </div>
+          ) : (
+            meals.map((m) => (
+              <div key={m.id || m._id} className="session-row">
+                <div>
+                  <p className="font-medium text-primary">{m.foodName}</p>
+                  <p className="text-xs text-tertiary capitalize">{m.mealType}</p>
+                </div>
+                <span className="font-mono text-sm text-primary">{m.calories} kcal</span>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProfileHub;

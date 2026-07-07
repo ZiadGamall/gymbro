@@ -138,16 +138,16 @@ const NutritionDiary = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] px-4 py-8">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-6">
+    <div className="page-shell">
+      <div className="page-content max-w-7xl grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="card">
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Nutrition Diary</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Log meals and track macro adherence in real time.</p>
-            {error && <p className="text-sm text-red-300 mt-2">{error}</p>}
+          <div className="card-surface">
+            <h1 className="page-title">Nutrition Diary</h1>
+            <p className="page-subtitle">Log meals and track macro adherence in real time.</p>
+            {error && <div className="alert-danger mt-4">{error}</div>}
           </div>
 
-          <form onSubmit={handleAdd} className="card space-y-4">
+          <form onSubmit={handleAdd} className="card-surface space-y-4">
             <h2 className="font-semibold text-[var(--text-primary)]">Add meal entry</h2>
 
             <div className="flex gap-2">
@@ -218,9 +218,16 @@ const NutritionDiary = () => {
             </button>
           </form>
 
-          <div className="card">
+          <div className="card-surface">
             <h2 className="font-semibold text-[var(--text-primary)] mb-4">Today entries</h2>
             <div className="space-y-3">
+              {loading ? (
+                <>
+                  <div className="skeleton-block h-16" />
+                  <div className="skeleton-block h-16" />
+                </>
+              ) : (
+                <>
               {entries
                 .filter((entry) => entry.date === today)
                 .map((entry) => (
@@ -251,7 +258,12 @@ const NutritionDiary = () => {
                   </div>
                 ))}
               {!loading && entries.filter((entry) => entry.date === today).length === 0 && (
-                <div className="text-sm text-[var(--text-secondary)]">No entries yet for today.</div>
+                <div className="empty-state py-8">
+                  <p className="empty-state-title">No meals logged yet</p>
+                  <p className="empty-state-body">Search for a food above to add your first entry today.</p>
+                </div>
+              )}
+                </>
               )}
             </div>
           </div>
@@ -261,7 +273,7 @@ const NutritionDiary = () => {
           {progressCards.map(([label, value, target, unit, Icon]) => {
             const p = progressValue(value, target);
             return (
-              <div key={label} className="card">
+              <div key={label} className="card-surface">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-[var(--text-secondary)]">{label}</div>
                   <Icon className="w-4 h-4 text-[var(--accent)]" />

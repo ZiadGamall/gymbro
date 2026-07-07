@@ -4,7 +4,9 @@ const { protect } = require("../controllers/authController");
 const { uploadVideo } = require("../utils/upload");
 
 const router = express.Router();
-// Route: POST /api/form-check/analyze
+
+router.get("/history", protect, formCheckController.getFormCheckHistory);
+
 router.post(
   "/analyze",
   protect,

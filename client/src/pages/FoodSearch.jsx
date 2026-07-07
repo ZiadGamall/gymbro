@@ -155,22 +155,16 @@ const FoodSearch = () => {
   const displayedLoading = initialLoading || loading;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
-      {/* Header */}
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">
-              Food Search
-            </h1>
-            <p className="text-[var(--text-secondary)]">
-              Find nutritional information for thousands of foods
-            </p>
-          </div>
+    <div className="page-shell">
+      <div className="page-content max-w-7xl">
+        <div className="text-center mb-8">
+          <h1 className="page-title">Food Search</h1>
+          <p className="page-subtitle">
+            Find nutritional information for thousands of foods
+          </p>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="py-2">
         {/* Search Bar */}
         <div className="mb-8">
           <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
@@ -478,6 +472,7 @@ const FoodSearch = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

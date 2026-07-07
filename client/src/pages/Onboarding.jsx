@@ -98,7 +98,7 @@ const Onboarding = () => {
 
         <div className="card min-h-[360px]">
           {error && (
-            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 px-4 py-3 text-sm">
+            <div className="alert-danger mb-4">
               {error}
             </div>
           )}

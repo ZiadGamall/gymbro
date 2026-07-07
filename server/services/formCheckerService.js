@@ -1,5 +1,8 @@
 const fs = require("fs");
 
+const FORM_CHECKER_URL =
+  process.env.FORM_CHECKER_URL || "http://127.0.0.1:8000";
+
 exports.forwardVideoToAI = async (videoPath, mode = "Beginner") => {
   try {
     const formData = new FormData();
@@ -8,7 +11,7 @@ exports.forwardVideoToAI = async (videoPath, mode = "Beginner") => {
     formData.append("video", blob, "video.mp4");
 
     const response = await fetch(
-      `http://localhost:8000/analyze-form?mode=${mode}`,
+      `${FORM_CHECKER_URL}/analyze-form?mode=${mode}`,
       {
         method: "POST",
         body: formData,

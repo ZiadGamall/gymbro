@@ -3,6 +3,16 @@ import { getHealthState, saveHealthState } from "./healthStore";
 
 const WORKOUT_SESSION_BASE = "/api/v1/workout-session";
 
+/** Coalesce concurrent identical GET calls (e.g. Navbar + page mount). */
+const inflight = new Map();
+
+function dedupeInflight(key, fn) {
+  if (inflight.has(key)) return inflight.get(key);
+  const promise = fn().finally(() => inflight.delete(key));
+  inflight.set(key, promise);
+  return promise;
+}
+
 export const authHeaders = () => {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -57,6 +67,7 @@ const transformWorkoutPayload = (payload) => {
 };
 
 export async function loadOnboarding() {
+  return dedupeInflight("onboarding", async () => {
   try {
     const res = await axios.get("/api/v1/onboarding", {
       headers: authHeaders(),
@@ -78,6 +89,7 @@ export async function loadOnboarding() {
     const local = getHealthState();
     return local.onboarding?.completed ? local.onboarding : null;
   }
+  });
 }
 
 export async function saveOnboarding(form) {
@@ -220,3 +232,127 @@ export async function estimateCaloriesBurned(payload) {
     notes: `Estimated from ${payload.duration} min at ~${heartRate} bpm avg heart rate`,
   };
 }
+
+/* ─── Splits ──────────────────────────────────────────────────────────────── */
+
+export async function loadAllSplits() {
+  const res = await axios.get("/api/v1/split/");
+  return res?.data?.data || [];
+}
+
+export async function loadSplitById(id) {
+  const res = await axios.get(`/api/v1/split/${id}`);
+  return res?.data?.data || null;
+}
+
+export async function loadSavedSplits() {
+  const res = await axios.get("/api/v1/split/saved", { headers: authHeaders() });
+  return res?.data?.data?.savedSplits || [];
+}
+
+export async function saveSplitToProfile(id) {
+  const res = await axios.post(`/api/v1/split/${id}/save`, null, {
+    headers: authHeaders(),
+  });
+  return res?.data;
+}
+
+export async function setActiveSplit(splitId, startDayIndex = 0) {
+  const res = await axios.post(
+    "/api/v1/split/set-active",
+    { splitId, startDayIndex },
+    { headers: authHeaders() },
+  );
+  return res?.data;
+}
+
+export async function loadTodaySplitWorkout() {
+  const res = await axios.get("/api/v1/split/today", { headers: authHeaders() });
+  const payload = res?.data?.data;
+  return payload?.workout ? payload : null;
+}
+
+export async function advanceSplitDay() {
+  const res = await axios.patch("/api/v1/split/advance-day", null, {
+    headers: authHeaders(),
+  });
+  return res?.data;
+}
+
+/* ─── Workout templates ───────────────────────────────────────────────────── */
+
+export async function loadMyWorkouts() {
+  const res = await axios.get("/api/v1/workouts/my-workouts", {
+    headers: authHeaders(),
+  });
+  return res?.data?.data?.workouts || [];
+}
+
+export async function createWorkoutTemplate(payload) {
+  const res = await axios.post("/api/v1/workouts/create-workout", payload, {
+    headers: authHeaders(),
+  });
+  return res?.data?.data?.workout;
+}
+
+/* ─── Exercises ───────────────────────────────────────────────────────────── */
+
+export async function searchExercises(term) {
+  const res = await axios.get("/api/v1/exercises/search", {
+    params: { search: term },
+    headers: authHeaders(),
+  });
+  return res?.data?.data?.exercises || [];
+}
+
+/* ─── Form check ──────────────────────────────────────────────────────────── */
+
+export async function analyzeFormVideo(file, mode = "Beginner") {
+  const formData = new FormData();
+  formData.append("video", file);
+  formData.append("mode", mode);
+  const res = await axios.post("/api/v1/form-check/analyze", formData, {
+    headers: {
+      ...authHeaders(),
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res?.data?.data || null;
+}
+
+export async function loadFormCheckHistory() {
+  const res = await axios.get("/api/v1/form-check/history", {
+    headers: authHeaders(),
+  });
+  const raw = res?.data?.data;
+  return Array.isArray(raw) ? raw : [];
+}
+
+/* ─── Recovery / sleep ────────────────────────────────────────────────────── */
+
+export async function getRecoveryRecommendation(payload) {
+  const res = await axios.post("/api/v1/status/daily-status", payload, {
+    headers: authHeaders(),
+  });
+  return res?.data?.data || null;
+}
+
+/* ─── User profile ────────────────────────────────────────────────────────── */
+
+export async function loadCurrentUser() {
+  return dedupeInflight("users/me", async () => {
+    const res = await axios.get("/api/v1/users/me", { headers: authHeaders() });
+    return parseUserResponse(res);
+  });
+}
+
+export async function updateUserAccount(formData) {
+  const res = await axios.patch("/api/v1/users/update-account", formData, {
+    headers: {
+      ...authHeaders(),
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res?.data;
+}
+
