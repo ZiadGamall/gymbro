@@ -18,6 +18,7 @@ const calorieRoutes = require("./routes/calorieRoutes");
 const formCheckRoutes = require("./routes/formCheckRoutes");
 const recoveryRoutes = require("./routes/recoveryRoutes");
 const splitRoutes = require("./routes/splitRoutes");
+const foodAnalysisRoutes = require("./routes/foodAnalysisRoutes");
 
 const cors = require("cors");
 const app = express();
@@ -65,6 +66,7 @@ app.use("/api/v1/calories", calorieRoutes);
 app.use("/api/v1/form-check", formCheckRoutes);
 app.use("/api/v1/status", recoveryRoutes);
 app.use("/api/v1/split", splitRoutes);
+app.use("/api/v1/foodAnalysis", foodAnalysisRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running");
