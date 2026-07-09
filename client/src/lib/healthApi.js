@@ -307,10 +307,11 @@ export async function searchExercises(term) {
 
 /* ─── Form check ──────────────────────────────────────────────────────────── */
 
-export async function analyzeFormVideo(file, mode = "Beginner") {
+export async function analyzeFormVideo(file, mode = "Beginner", exercise = "squats") {
   const formData = new FormData();
   formData.append("video", file);
   formData.append("mode", mode);
+  formData.append("exercise", exercise);
   const res = await axios.post("/api/v1/form-check/analyze", formData, {
     headers: {
       ...authHeaders(),

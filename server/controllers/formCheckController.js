@@ -21,20 +21,27 @@ exports.analyzeUserVideo = catchAsync(async (req, res, next) => {
     }
 
     const mode = req.body.mode || "Beginner";
+    const exercise = req.body.exercise || "squats";
     const aiResult = await formCheckerService.forwardVideoToAI(
       req.file.path,
       mode,
+      exercise,
+      req.user.id,
+      {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+      },
     );
 
     console.log("SUCCESS! Data received from Python:", aiResult);
 
     const newRecord = await formCheckHistory.create({
       user: req.user.id,
-      exercise: aiResult.exercise || "Squats",
+      exercise: aiResult.exercise || exercise,
       mode: aiResult.mode || mode,
       correct_reps: aiResult.correct_reps !== undefined ? aiResult.correct_reps : 0,
       incorrect_reps: aiResult.incorrect_reps !== undefined ? aiResult.incorrect_reps : 0,
-      errors_detected: aiResult.errors_detected || [],
+      errors_detected: aiResult.errors_detected || {},
       output_video: aiResult.output_video || null,
     });
 

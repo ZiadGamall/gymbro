@@ -47,9 +47,9 @@ const uploadVideo = multer({
     fileSize: 100 * 1024 * 1024,
   },
   fileFilter: createFileFilter({
-    extensions: ["mp4", "mov", "avi", "flv"],
-    mimePattern: /^video\/(mp4|quicktime|x-msvideo|x-flv)$/,
-    message: "Only video files (mp4, mov, avi, flv) are allowed.",
+    extensions: ["mp4", "mov", "avi", "flv", "webm"],
+    mimePattern: /^video\/(mp4|quicktime|x-msvideo|x-flv|webm)$/,
+    message: "Only video files (mp4, mov, avi, flv, webm) are allowed.",
   }),
 });
 

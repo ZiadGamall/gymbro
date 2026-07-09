@@ -8,11 +8,17 @@ import {
 } from "../lib/healthApi";
 
 const MODES = ["Beginner", "Pro"];
+const EXERCISES = [
+  { label: "Squats", value: "squats" },
+  { label: "Biceps Curl", value: "biceps-curl" },
+  { label: "Shoulder Press", value: "shoulder-press" },
+];
 
 const FormChecker = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [mode, setMode] = useState("Beginner");
+  const [exercise, setExercise] = useState("squats");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [result, setResult] = useState(null);
@@ -40,7 +46,7 @@ const FormChecker = () => {
 
     try {
       setProgress("Analyzing form with AI…");
-      const data = await analyzeFormVideo(file, mode);
+      const data = await analyzeFormVideo(file, mode, exercise);
       setResult(data);
       setProgress("");
       const updated = await loadFormCheckHistory();
@@ -97,6 +103,20 @@ const FormChecker = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="field-label" htmlFor="form-exercise">Exercise</label>
+            <select
+              id="form-exercise"
+              value={exercise}
+              onChange={(e) => setExercise(e.target.value)}
+              className="input-field w-full"
+            >
+              {EXERCISES.map((item) => (
+                <option key={item.value} value={item.value}>{item.label}</option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="field-label" htmlFor="form-mode">Analysis mode</label>
             <select

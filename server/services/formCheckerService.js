@@ -1,17 +1,27 @@
 const fs = require("fs");
+const path = require("path");
 
 const FORM_CHECKER_URL =
   process.env.FORM_CHECKER_URL || "http://127.0.0.1:8000";
 
-exports.forwardVideoToAI = async (videoPath, mode = "Beginner") => {
+exports.forwardVideoToAI = async (
+  videoPath,
+  mode = "Beginner",
+  exercise = "squats",
+  userId = "anonymous",
+  metadata = {},
+) => {
   try {
     const formData = new FormData();
     const fileBuffer = fs.readFileSync(videoPath);
-    const blob = new Blob([fileBuffer], { type: "video/mp4" });
-    formData.append("video", blob, "video.mp4");
+    const filename = metadata.originalname || path.basename(videoPath);
+    const mimeType = metadata.mimetype || "application/octet-stream";
+    const blob = new Blob([fileBuffer], { type: mimeType });
+    formData.append("video", blob, filename);
 
+    const params = new URLSearchParams({ mode, exercise, user_id: userId });
     const response = await fetch(
-      `${FORM_CHECKER_URL}/analyze-form?mode=${mode}`,
+      `${FORM_CHECKER_URL}/analyze-form?${params.toString()}`,
       {
         method: "POST",
         body: formData,
