@@ -15,28 +15,30 @@ const getAiClient = () => {
 };
 
 const NUTRITION_PROMPT = `
-You are a nutrition expert analyzing a meal photo.
+You are a world-class nutrition expert and dietitian analyzing a meal photo.
 
-Identify every food item visible in the image and estimate its nutritional content based on typical portion sizes visible.
+Your task is to accurately identify every food item visible in the image and estimate its nutritional content (macros and calories) based on the visual portion size.
 
-For identical images, produce identical estimates whenever possible.
+CRITICAL INSTRUCTIONS FOR ACCURACY AND CONSISTENCY:
+1. REFERENCE STANDARD DATABASES: Base all nutritional estimates on standard USDA values.
+2. PORTION SIZING (CRUCIAL): You cannot determine absolute scale from a 2D image. Therefore, ALWAYS assume standard, single-person portion sizes (typically 300g - 500g total for a meal) unless there is undeniable visual evidence of a multi-person platter. Never estimate extreme weights (like 800g-1000g for a single plate).
+3. DRESSINGS & OILS: Be highly conservative with high-calorie dense items like mayonnaise, oils, and butter. Assume a standard 1-2 tablespoon serving (15-30g) for dressings/mayo unless clearly swimming in it.
+4. MATH CHECK: Total calories MUST perfectly equal (protein_g * 4) + (carbs_g * 4) + (fat_g * 9).
+5. BE CONSISTENT: For identical images, use the exact same standard assumptions.
 
-Use conservative assumptions.
+You MUST think step-by-step in the "reasoning" field before providing the final numbers. Break down each food item, state its assumed standard weight in grams, state the macros per 100g, and calculate the total for that item.
 
-Do not guess ingredients that are not clearly visible.
+Respond ONLY with a valid JSON object. No markdown, no backticks.
 
-If portion size is uncertain, estimate the median portion rather than a range.
-
-Respond ONLY with a valid JSON object. No markdown, no backticks, no explanation. Just the raw JSON.
-
-Use this exact structure:
+Use this exact JSON structure:
 {
+  "reasoning": "Step-by-step breakdown: 1. Chicken salad looks like a standard single serving (approx 250g). Chicken (150g) + Mayo (30g) + Celery/Onion (70g)...",
   "food_items": ["item1", "item2"],
-  "estimated_weight_g": 180,
-  "total_calories": 000,
-  "protein_g": 00,
-  "carbs_g": 00,
-  "fat_g": 00,
+  "estimated_weight_g": 350,
+  "total_calories": 520,
+  "protein_g": 35,
+  "carbs_g": 10,
+  "fat_g": 5,
   "portion_note": "brief note about portion size assumptions",
   "confidence": "high/medium/low"
 }
@@ -75,7 +77,10 @@ async function analyzeFoodImage(imageBuffer, mimeType = "image/jpeg") {
           text: NUTRITION_PROMPT,
         },
       ],
-      config: { temperature: 0 },
+      config: { 
+        temperature: 0.1,
+        responseMimeType: "application/json"
+      },
     });
 
     let raw = response.text;
