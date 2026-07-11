@@ -60,11 +60,15 @@ const MORE_NAV = [
   { path: "/form-check", label: "Form Check", icon: ClipboardCheck },
   { path: "/sleep", label: "Recovery", icon: Moon },
   { path: "/food-search", label: "Foods", icon: Search },
+  { path: "/exercise-search", label: "Exercises", icon: Dumbbell },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/onboarding", label: "Setup", icon: Settings2 },
 ];
 
-const PUBLIC_NAV = [{ path: "/food-search", label: "Foods", icon: Search }];
+const PUBLIC_NAV = [
+  { path: "/food-search", label: "Foods", icon: Search },
+  { path: "/exercise-search", label: "Exercises", icon: Dumbbell }
+];
 
 function isActive(pathname, item) {
   if (item.exact || item.path === "/") return pathname === item.path;
