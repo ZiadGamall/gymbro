@@ -20,7 +20,8 @@ import {
   Zap,
 } from "lucide-react";
 import axios from "axios";
-import { parseUserResponse, loadWorkoutSessions, loadNutritionSummary, loadWeeklyProgress } from "../lib/healthApi";
+import { parseUserResponse, loadWorkoutSessions, loadNutritionSummary, loadWeeklyProgress, getRecoveryRecommendation } from "../lib/healthApi";
+import SmartWatchSimulator from "../lib/smartWatch";
 
 const riseUp = {
   hidden: { opacity: 0, y: 30 },
@@ -150,7 +151,8 @@ const Home = () => {
         const res = await axios.get("/api/v1/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMe(parseUserResponse(res));
+        const user = parseUserResponse(res);
+        setMe(user);
 
         try {
           const today = new Date().toISOString().slice(0, 10);
@@ -176,12 +178,31 @@ const Home = () => {
             setSessionDesc("No workouts logged today");
           }
 
-          if (todayTotals && todayTotals.calories > 0) {
-            setRecoveryStatus("Fueling");
-            setRecoveryDesc(`${Math.round(todayTotals.calories)} kcal logged today`);
-          } else {
-            setRecoveryStatus("Pending");
-            setRecoveryDesc("Log meals to align recovery");
+          setRecoveryStatus("Syncing...");
+          setRecoveryDesc("Requesting smartwatch telemetry...");
+
+          try {
+            // Only try if user has set a gender/DOB which is required by the recovery endpoint
+            if (!user.gender || !user.dateOfBirth) {
+              throw new Error("Missing profile info");
+            }
+            const watchData = await SmartWatchSimulator.syncData();
+            const rec = await getRecoveryRecommendation(watchData);
+            if (rec && rec.recommendation) {
+              setRecoveryStatus(rec.recommendation);
+              setRecoveryDesc(rec.message || "Ready for training.");
+            } else {
+              throw new Error("No recommendation returned");
+            }
+          } catch (err) {
+            // Fallback to basic nutrition checking if AI fails or profile is incomplete
+            if (todayTotals && todayTotals.calories > 0) {
+              setRecoveryStatus("Fueling");
+              setRecoveryDesc(`${Math.round(todayTotals.calories)} kcal logged today`);
+            } else {
+              setRecoveryStatus("Pending");
+              setRecoveryDesc(user.gender && user.dateOfBirth ? "AI service unavailable" : "Complete profile for AI recovery");
+            }
           }
         } catch (e) {
           console.error("Failed to load dashboard stats for home", e);

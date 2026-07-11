@@ -43,11 +43,11 @@ exports.getDailyRecoveryRecommendation = catchAsync(async (req, res, next) => {
     active_minutes,
   };
 
-  const RECOVERY_SERVICE_URL =
-    process.env.RECOVERY_SERVICE_URL || "http://127.0.0.1:8001/predict-recovery";
+  const RECOVERY_SERVICE_BASE =
+    process.env.RECOVERY_SERVICE_URL || "http://127.0.0.1:8001";
 
-  // 4. Send directly to FastAPI microservice using the virtual property
-  const response = await fetch(RECOVERY_SERVICE_URL, {
+  // 4. Send directly to FastAPI microservice
+  const response = await fetch(`${RECOVERY_SERVICE_BASE}/predict-recovery`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
