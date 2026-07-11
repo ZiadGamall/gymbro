@@ -26,7 +26,7 @@ const workoutSessionSchema = new mongoose.Schema(
     },
     exercises: [
       {
-        exerciseId: { type: String },
+        exerciseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Exercise' },
         name: { type: String },
         sets: [
           {

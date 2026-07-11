@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { Activity, Layers, Moon, ScanLine, User } from "lucide-react";
+import { Activity, Layers, Moon, ScanLine, User, Flame, Dumbbell } from "lucide-react";
 import { CoachNavBar } from "../components/coach/CoachNavBar";
 import { CoachContextBar } from "../components/coach/CoachContextBar";
-import CaloriesBurnedCard from "../components/fitbot/CaloriesBurnedCard";
 import { useFitBot } from "../components/fitbot/FitBotContext";
 
 const TOOLS = [
@@ -10,6 +9,8 @@ const TOOLS = [
   { to: "/splits", label: "Training Splits", icon: Layers, desc: "Browse & save programs" },
   { to: "/sleep", label: "Sleep & Recovery", icon: Moon, desc: "Wearable sync & readiness" },
   { to: "/profile", label: "My Profile", icon: User, desc: "Goals, logs & saved plans" },
+  { to: "/calories-estimator", label: "Calories Estimator", icon: Flame, desc: "ML-powered calorie burn predictor" },
+  { to: "/muscle-lab", label: "Muscle Lab", icon: Activity, desc: "Interactive 3D muscle mapping" },
 ];
 
 export default function AICoach() {
@@ -21,8 +22,8 @@ export default function AICoach() {
       <CoachContextBar />
 
       <div className="page-content max-w-5xl !pt-4 !pb-6">
-        <p className="section-title mb-1">AI Coach</p>
-        <h1 className="page-title mb-6">FitBot Hub</h1>
+        <p className="section-title mb-1">AI Tools</p>
+        <h1 className="page-title mb-6">AI Lab</h1>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="card-surface sm:col-span-2">
@@ -39,8 +40,6 @@ export default function AICoach() {
               </button>
             </div>
           </div>
-
-          <CaloriesBurnedCard />
 
           {TOOLS.map(({ to, label, icon: Icon, desc }) => (
             <Link key={to} to={to} className="card-surface hover:border-accent/40 transition-colors group">
@@ -59,7 +58,7 @@ export default function AICoach() {
           <Link to="/workouts" className="card-surface hover:border-accent/40 transition-colors group">
             <div className="flex items-start gap-3">
               <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-elevated text-accent group-hover:bg-accent/10 shrink-0 transition-colors">
-                <Activity className="w-5 h-5" strokeWidth={1.8} />
+                <Dumbbell className="w-5 h-5" strokeWidth={1.8} />
               </span>
               <div>
                 <p className="font-display font-semibold text-primary">Log a workout session</p>

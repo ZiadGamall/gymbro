@@ -34,6 +34,7 @@ exports.getMyWorkouts = catchAsync(async (req, res) => {
   const user = await User.findById(req.user._id).populate({
     path: "workoutList",
     select: "name numberOfExercises exercises createdAt",
+    populate: { path: "exercises.exerciseId", select: "name instructionSteps bodyPart target equipment gifUrl" }
   });
 
   res.status(200).json({

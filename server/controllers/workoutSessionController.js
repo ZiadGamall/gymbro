@@ -32,7 +32,9 @@ exports.getWorkoutSessions = catchAsync(async (req, res) => {
     filter.date = { $gte: start, $lte: end };
   }
 
-  const docs = await WorkoutSession.find(filter).sort({ createdAt: -1 });
+  const docs = await WorkoutSession.find(filter)
+    .populate({ path: "exercises.exerciseId", select: "name instructionSteps bodyPart target equipment gifUrl" })
+    .sort({ createdAt: -1 });
 
   res.status(200).json({
     status: "success",

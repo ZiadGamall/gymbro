@@ -8,6 +8,8 @@ import {
   ClipboardList,
   Loader2,
   Pencil,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   loadCurrentUser,
@@ -24,6 +26,68 @@ const GOAL_LABELS = {
   muscle_gain: "Build muscle",
   muscle_tone: "Muscle tone",
   endurance: "Endurance",
+};
+
+const ExerciseFoldable = ({ ex, isLog }) => {
+  const [expanded, setExpanded] = useState(false);
+  const details = ex.exerciseId?.instructionSteps ? ex.exerciseId : ex.exercise;
+  const name = ex.exerciseId?.name || ex.exercise?.name || ex.exerciseName || ex.name || 'Exercise';
+
+  return (
+    <li className="text-[13px] text-secondary flex flex-col gap-1">
+      <div 
+        className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+        <span className="font-medium text-primary flex-1">{name}</span>
+        {details && (
+          <span className="text-tertiary hover:text-primary transition-colors p-1 rounded-md hover:bg-glass-bg">
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </span>
+        )}
+      </div>
+
+      {expanded && details && (
+        <div className="ml-3.5 pl-3 mt-1 mb-2 border-l border-[var(--accent)]/30 space-y-3 text-xs">
+          <div className="flex flex-wrap gap-2">
+            {details.bodyPart && <span className="px-2 py-0.5 bg-glass-bg rounded-md text-tertiary capitalize">Muscle: {details.bodyPart}</span>}
+            {details.target && <span className="px-2 py-0.5 bg-glass-bg rounded-md text-tertiary capitalize">Target: {details.target}</span>}
+            {details.equipment && <span className="px-2 py-0.5 bg-glass-bg rounded-md text-tertiary capitalize">Equipment: {details.equipment}</span>}
+          </div>
+          {details.gifUrl && (
+            <div className="mt-2 mb-2 w-full max-w-[200px] overflow-hidden rounded-xl border border-glass-border">
+              <img src={details.gifUrl} alt={name} className="w-full h-auto object-cover" loading="lazy" />
+            </div>
+          )}
+          {details.instructionSteps && details.instructionSteps.length > 0 && (
+            <ol className="list-decimal list-outside ml-4 space-y-1.5 text-tertiary leading-relaxed">
+              {details.instructionSteps.map((step, idx) => (
+                <li key={idx}>{step}</li>
+              ))}
+            </ol>
+          )}
+        </div>
+      )}
+
+      {/* Rendering Sets */}
+      {!isLog && ex.sets && (
+        <div className="ml-3.5 pl-2 border-l border-glass-border space-y-0.5 text-xs text-tertiary">
+          {ex.sets} sets × {ex.repsPerSet || 0} reps
+        </div>
+      )}
+      
+      {isLog && ex.sets && ex.sets.length > 0 && (
+        <div className="ml-3.5 pl-2 border-l border-glass-border space-y-0.5">
+          {ex.sets.map((set, setIdx) => (
+            <div key={setIdx} className="text-xs text-tertiary">
+              Set {set.setNumber || setIdx + 1}: {set.reps || 0} reps {set.weight ? `@ ${set.weight}kg` : ''}
+            </div>
+          ))}
+        </div>
+      )}
+    </li>
+  );
 };
 
 const ProfileHub = () => {
@@ -114,7 +178,7 @@ const ProfileHub = () => {
           <div className="card-surface">
             <h2 className="font-display font-semibold text-primary mb-3">Goals & targets</h2>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between"><dt className="text-tertiary">Overall goal</dt><dd className="text-primary capitalize">{GOAL_LABELS[onboarding?.goal] || onboarding?.goal || "—"}</dd></div>
+              <div className="flex justify-between"><dt className="text-tertiary">Overall goal</dt><dd className="text-primary capitalize">{GOAL_LABELS[onboarding?.goal] || (onboarding?.goal ? onboarding.goal.replace(/_/g, " ") : "—")}</dd></div>
               <div className="flex justify-between"><dt className="text-tertiary">Level</dt><dd className="text-primary capitalize">{onboarding?.level || "—"}</dd></div>
               <div className="flex justify-between"><dt className="text-tertiary">Calorie goal</dt><dd className="font-mono text-primary">{onboarding?.calorieTarget || "—"} kcal</dd></div>
               <div className="flex justify-between"><dt className="text-tertiary">Protein goal</dt><dd className="font-mono text-primary">{onboarding?.proteinTarget || "—"} g</dd></div>
@@ -144,10 +208,10 @@ const ProfileHub = () => {
             </div>
           ) : (
             splits.map((split) => (
-              <div key={split._id} className="session-row">
+              <Link key={split._id} to={`/splits?view=${split._id}`} className="session-row block hover:border-accent/40 transition-colors">
                 <p className="font-medium text-primary">{split.program}</p>
                 <p className="text-xs text-tertiary">{split.days?.length || 0} days</p>
-              </div>
+              </Link>
             ))
           )}
         </div>
@@ -169,17 +233,9 @@ const ProfileHub = () => {
                   {wo.exercises?.length || wo.numberOfExercises || 0} exercises
                 </p>
                 {wo.exercises && wo.exercises.length > 0 && (
-                  <ul className="mt-2 space-y-1.5 border-t border-glass-border pt-3">
+                  <ul className="mt-2 space-y-2 border-t border-glass-border pt-3">
                     {wo.exercises.map((ex, i) => (
-                      <li key={i} className="text-[13px] text-secondary flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                        <span>{ex.exerciseId?.name || ex.name || 'Exercise'}</span>
-                        {ex.sets && (
-                          <span className="text-tertiary ml-auto text-xs">
-                            {ex.sets.length} sets
-                          </span>
-                        )}
-                      </li>
+                      <ExerciseFoldable key={i} ex={ex} isLog={false} />
                     ))}
                   </ul>
                 )}
@@ -199,11 +255,18 @@ const ProfileHub = () => {
             </div>
           ) : (
             sessions.map((s) => (
-              <div key={s.id || s._id} className="session-row">
+              <div key={s.id || s._id} className="session-row flex-col items-start gap-2">
                 <div>
                   <p className="font-medium text-primary">{s.planName}</p>
                   <p className="text-xs text-tertiary">{s.date} · {s.durationMin} min</p>
                 </div>
+                {s.exercises && s.exercises.length > 0 && (
+                  <ul className="w-full mt-2 space-y-2 border-t border-glass-border pt-3">
+                    {s.exercises.map((ex, i) => (
+                      <ExerciseFoldable key={i} ex={ex} isLog={true} />
+                    ))}
+                  </ul>
+                )}
               </div>
             ))
           )}

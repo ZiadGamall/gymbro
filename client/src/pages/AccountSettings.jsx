@@ -40,7 +40,8 @@ const AccountSettings = () => {
     email: '',
     dateOfBirth: '',
     height: '',
-    weight: ''
+    weight: '',
+    gender: ''
   })
   const [photo, setPhoto] = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -78,7 +79,8 @@ const AccountSettings = () => {
           email: user?.email || '',
           dateOfBirth: toDateInputValue(user?.dateOfBirth),
           height: user?.height ?? '',
-          weight: user?.weight ?? ''
+          weight: user?.weight ?? '',
+          gender: user?.gender || ''
         }))
       } catch (err) {
         setError(err.response?.data?.message || err.response?.data?.msg || 'Failed to load your account data.')
@@ -139,6 +141,7 @@ const AccountSettings = () => {
       appendIfChanged('dateOfBirth', formData.dateOfBirth)
       appendIfChanged('height', formData.height)
       appendIfChanged('weight', formData.weight)
+      appendIfChanged('gender', formData.gender)
 
       if (photo) {
         formDataToSend.append('photo', photo)

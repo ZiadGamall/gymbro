@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Calendar, ChevronRight, Layers, Loader2, Star } from "lucide-react";
 import {
   getApiError,
@@ -12,6 +12,7 @@ import {
 
 const SplitsHub = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [splits, setSplits] = useState([]);
   const [savedIds, setSavedIds] = useState(new Set());
   const [selected, setSelected] = useState(null);
@@ -38,8 +39,14 @@ const SplitsHub = () => {
     }
     refresh()
       .catch(() => setError("Failed to load splits."))
-      .finally(() => setLoading(false));
-  }, [navigate]);
+      .finally(() => {
+        setLoading(false);
+        const viewId = searchParams.get("view");
+        if (viewId) {
+          openDetail(viewId);
+        }
+      });
+  }, [navigate, searchParams]);
 
   const openDetail = async (id) => {
     setError("");

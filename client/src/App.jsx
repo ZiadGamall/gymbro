@@ -24,6 +24,7 @@ import SplitsHub from "./pages/SplitsHub";
 import SleepRecovery from "./pages/SleepRecovery";
 import WorkoutLogger from "./pages/WorkoutLogger";
 import WorkoutBuilder from "./pages/WorkoutBuilder";
+import CaloriesEstimator from "./pages/CaloriesEstimator";
 import ProfileHub from "./pages/ProfileHub";
 import MuscleLab from "./pages/MuscleLab";
 import ExerciseSearch from "./pages/ExerciseSearch";
@@ -81,8 +82,8 @@ function AppShell() {
         <Route path="/train" element={<Train />} />
         <Route path="/eat" element={<Eat />} />
 
-        {/* ── FitBot Hub ────────────────────────────────────────────────── */}
-        <Route path="/coach" element={<AICoach />} />
+        {/* ── AI Lab ────────────────────────────────────────────────── */}
+        <Route path="/ai-lab" element={<AICoach />} />
 
         {/* ── Legacy routes ─────────────────────────────────────────────── */}
         <Route path="/dashboard" element={<Dashboard />} />
@@ -95,6 +96,7 @@ function AppShell() {
         <Route path="/nutrition" element={<NutritionDiary />} />
         <Route path="/progress" element={<ProgressHub />} />
         <Route path="/muscle-lab" element={<MuscleLab />} />
+        <Route path="/calories-estimator" element={<CaloriesEstimator />} />
         <Route path="/food-search" element={<FoodSearch />} />
         <Route path="/exercise-search" element={<ExerciseSearch />} />
         <Route path="/onboarding" element={<Onboarding />} />

@@ -11,7 +11,7 @@ const workoutSchema = mongoose.Schema(
     exercises: [
       {
         exerciseId: {
-          type: String,
+          type: mongoose.Schema.Types.ObjectId,
           ref: "Exercise",
           required: true,
         },

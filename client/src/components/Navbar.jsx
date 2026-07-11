@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Activity,
   BatteryCharging,
+  BookOpen,
   ChevronDown,
   ClipboardCheck,
   Dumbbell,
@@ -54,7 +56,7 @@ const PRIMARY_NAV = [
   { path: "/eat", label: "Eat", icon: Utensils },
   { path: "/splits", label: "Splits", icon: Layers },
   { path: "/progress", label: "Progress", icon: TrendingUp },
-  { path: "/coach", label: "FitBot", icon: Sparkles, matchPrefix: "/coach" },
+  { path: "/ai-lab", label: "AI Lab", icon: Sparkles, matchPrefix: "/ai-lab" },
 ];
 
 const MORE_NAV = [
@@ -62,7 +64,8 @@ const MORE_NAV = [
   { path: "/form-check", label: "Form Check", icon: ClipboardCheck },
   { path: "/sleep", label: "Recovery", icon: BatteryCharging },
   { path: "/food-search", label: "Foods", icon: Search },
-  { path: "/exercise-search", label: "Exercises", icon: Dumbbell },
+  { path: "/exercise-search", label: "Exercises", icon: BookOpen },
+  { path: "/muscle-lab", label: "Muscle Lab", icon: Activity },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/account-settings", label: "Manage Account", icon: Settings2 },
   { path: "/onboarding", label: "Onboarding", icon: Layers },
@@ -70,7 +73,7 @@ const MORE_NAV = [
 
 const PUBLIC_NAV = [
   { path: "/food-search", label: "Foods", icon: Search },
-  { path: "/exercise-search", label: "Exercises", icon: Dumbbell }
+  { path: "/exercise-search", label: "Exercises", icon: BookOpen }
 ];
 
 function isActive(pathname, item) {
