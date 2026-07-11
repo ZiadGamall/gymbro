@@ -20,7 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import axios from "axios";
-import { parseUserResponse } from "../lib/healthApi";
+import { parseUserResponse, loadWorkoutSessions, loadNutritionSummary } from "../lib/healthApi";
 
 const riseUp = {
   hidden: { opacity: 0, y: 30 },
@@ -40,7 +40,7 @@ const stagger = {
 };
 
 const heroStats = [
-  { value: "< 1s", label: "AI Response Time", tone: "var(--neon-blue)" },
+  { value: "~3s", label: "AI Response Time", tone: "var(--neon-blue)" },
   { value: "100+", label: "Exercises Catalog", tone: "var(--neon-green)" },
   { value: "24/7", label: "Smart Coaching", tone: "#f97316" },
   { value: "100%", label: "Real-time Sync", tone: "#22d3ee" },
@@ -125,6 +125,13 @@ const Home = () => {
   const [me, setMe] = useState(null);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const [workoutPercent, setWorkoutPercent] = useState(86);
+  const [sessionName, setSessionName] = useState("Push + Core");
+  const [sessionDesc, setSessionDesc] = useState("54 mins, 7 movements");
+  const [recoveryStatus, setRecoveryStatus] = useState("Ready");
+  const [recoveryDesc, setRecoveryDesc] = useState("Sleep and hydration aligned");
+
   const location = useLocation();
   const heroCardRef = useRef(null);
   const sectionRefs = useRef([]);
@@ -144,6 +151,37 @@ const Home = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMe(parseUserResponse(res));
+
+        try {
+          const today = new Date().toISOString().slice(0, 10);
+          const [todayWorkouts, todayTotals] = await Promise.all([
+            loadWorkoutSessions(today),
+            loadNutritionSummary(today),
+          ]);
+
+          if (todayWorkouts && todayWorkouts.length > 0) {
+            const completedWorkouts = todayWorkouts.filter(s => s.completed).length;
+            setWorkoutPercent(Math.min(100, Math.round((completedWorkouts / Math.max(todayWorkouts.length, 1)) * 100)));
+            
+            const lastSession = todayWorkouts[0];
+            setSessionName(lastSession.planName || "Workout");
+            setSessionDesc(`${lastSession.durationMin} mins, ${lastSession.intensity} intensity`);
+          } else {
+            setWorkoutPercent(0);
+            setSessionName("Rest Day");
+            setSessionDesc("No workouts logged today");
+          }
+
+          if (todayTotals && todayTotals.calories > 0) {
+            setRecoveryStatus("Fueling");
+            setRecoveryDesc(`${Math.round(todayTotals.calories)} kcal logged today`);
+          } else {
+            setRecoveryStatus("Pending");
+            setRecoveryDesc("Log meals to align recovery");
+          }
+        } catch (e) {
+          console.error("Failed to load dashboard stats for home", e);
+        }
       } catch {
         setMe(null);
         setIsLoggedIn(false);
@@ -317,19 +355,19 @@ const Home = () => {
                 </div>
 
                 <h2 className="mt-4 font-display text-3xl font-bold text-white">
-                  Platform Capabilities Overview
+                  Daily Intelligence Briefing
                 </h2>
 
                 <div className="mt-7 space-y-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-                      <span>Computer Vision Analysis</span>
-                      <span className="font-semibold text-[var(--neon-green)]">Active</span>
+                      <span>Workout Execution</span>
+                      <span className="font-semibold text-[var(--neon-green)]">{workoutPercent}%</span>
                     </div>
                     <div className="mt-3 h-2 rounded-full bg-white/10">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
+                        animate={{ width: `${workoutPercent}%` }}
                         transition={{ duration: 1.2, ease: "easeOut" }}
                         className="h-2 rounded-full bg-gradient-to-r from-[var(--neon-green)] to-[var(--neon-blue)]"
                       />
@@ -339,17 +377,17 @@ const Home = () => {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-[#0a1324]/90 p-4">
                       <div className="text-xs uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
-                        Machine Learning
+                        Focus Session
                       </div>
-                      <div className="mt-2 text-2xl font-semibold text-white">Prediction</div>
-                      <div className="mt-2 text-sm text-[var(--text-secondary)]">Calories burned from heart rate</div>
+                      <div className="mt-2 text-2xl font-semibold text-white truncate" title={sessionName}>{sessionName}</div>
+                      <div className="mt-2 text-sm text-[var(--text-secondary)] truncate">{sessionDesc}</div>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-[#0a1324]/90 p-4">
                       <div className="text-xs uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
-                        FitBot Engine
+                        Recovery Index
                       </div>
-                      <div className="mt-2 text-2xl font-semibold text-[var(--neon-green)]">Contextual</div>
-                      <div className="mt-2 text-sm text-[var(--text-secondary)]">Personalized AI workout coaching</div>
+                      <div className="mt-2 text-2xl font-semibold text-[var(--neon-green)]">{recoveryStatus}</div>
+                      <div className="mt-2 text-sm text-[var(--text-secondary)] truncate">{recoveryDesc}</div>
                     </div>
                   </div>
                 </div>
