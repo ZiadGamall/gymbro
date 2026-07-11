@@ -224,7 +224,7 @@ const ExerciseSearch = () => {
             </div>
 
             {/* Right Pane: Details (Narrower now) */}
-            <div className="lg:col-span-5 order-1 lg:order-2">
+            <div className="lg:col-span-5 order-1 lg:order-2 lg:mt-[44px]">
               <div className="card p-5 lg:sticky top-24">
                 <div className="flex items-start justify-between gap-3 mb-5">
                   <div>

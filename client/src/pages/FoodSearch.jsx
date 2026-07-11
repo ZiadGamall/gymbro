@@ -329,7 +329,7 @@ const FoodSearch = () => {
           </div>
 
           {/* Details */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 lg:mt-[44px]">
             <div className="card p-6 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
