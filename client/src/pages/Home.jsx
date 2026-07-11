@@ -40,10 +40,10 @@ const stagger = {
 };
 
 const heroStats = [
-  { value: "12.6k", label: "Active athletes", tone: "var(--neon-blue)" },
-  { value: "91%", label: "Plan completion", tone: "var(--neon-green)" },
-  { value: "4.97", label: "App satisfaction", tone: "#f97316" },
-  { value: "38m", label: "Avg daily focus", tone: "#22d3ee" },
+  { value: "< 1s", label: "AI Response Time", tone: "var(--neon-blue)" },
+  { value: "100+", label: "Exercises Catalog", tone: "var(--neon-green)" },
+  { value: "24/7", label: "Smart Coaching", tone: "#f97316" },
+  { value: "100%", label: "Real-time Sync", tone: "#22d3ee" },
 ];
 
 const storytellingSteps = [
@@ -317,19 +317,19 @@ const Home = () => {
                 </div>
 
                 <h2 className="mt-4 font-display text-3xl font-bold text-white">
-                  Daily Intelligence Briefing
+                  Platform Capabilities Overview
                 </h2>
 
                 <div className="mt-7 space-y-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-                      <span>Workout Execution</span>
-                      <span className="font-semibold text-[var(--neon-green)]">86%</span>
+                      <span>Computer Vision Analysis</span>
+                      <span className="font-semibold text-[var(--neon-green)]">Active</span>
                     </div>
                     <div className="mt-3 h-2 rounded-full bg-white/10">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: "86%" }}
+                        animate={{ width: "100%" }}
                         transition={{ duration: 1.2, ease: "easeOut" }}
                         className="h-2 rounded-full bg-gradient-to-r from-[var(--neon-green)] to-[var(--neon-blue)]"
                       />
@@ -339,17 +339,17 @@ const Home = () => {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-[#0a1324]/90 p-4">
                       <div className="text-xs uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
-                        Focus Session
+                        Machine Learning
                       </div>
-                      <div className="mt-2 text-2xl font-semibold text-white">Push + Core</div>
-                      <div className="mt-2 text-sm text-[var(--text-secondary)]">54 mins, 7 movements</div>
+                      <div className="mt-2 text-2xl font-semibold text-white">Prediction</div>
+                      <div className="mt-2 text-sm text-[var(--text-secondary)]">Calories burned from heart rate</div>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-[#0a1324]/90 p-4">
                       <div className="text-xs uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
-                        Recovery Index
+                        FitBot Engine
                       </div>
-                      <div className="mt-2 text-2xl font-semibold text-[var(--neon-green)]">Ready</div>
-                      <div className="mt-2 text-sm text-[var(--text-secondary)]">Sleep and hydration aligned</div>
+                      <div className="mt-2 text-2xl font-semibold text-[var(--neon-green)]">Contextual</div>
+                      <div className="mt-2 text-sm text-[var(--text-secondary)]">Personalized AI workout coaching</div>
                     </div>
                   </div>
                 </div>
@@ -511,13 +511,13 @@ const Home = () => {
           </motion.div>
 
           <motion.div variants={riseUp} className="card-neon rounded-[2rem] p-8 sm:p-10">
-            <p className="text-sm uppercase tracking-[0.3em] text-[var(--neon-green)]">Transformation Pulse</p>
-            <h3 className="mt-4 font-display text-3xl font-bold text-white">Average 90-Day Outcomes</h3>
+            <p className="text-sm uppercase tracking-[0.3em] text-[var(--neon-green)]">System Performance</p>
+            <h3 className="mt-4 font-display text-3xl font-bold text-white">Core Engine Metrics</h3>
             <div className="mt-8 space-y-5">
               {[
-                { name: "Training consistency", val: 89 },
-                { name: "Weekly adherence", val: 84 },
-                { name: "Nutrition compliance", val: 78 },
+                { name: "AI Plan Accuracy", val: 95 },
+                { name: "Vision Tracking Precision", val: 92 },
+                { name: "Data Synchronization", val: 100 },
               ].map((metric) => (
                 <div key={metric.name}>
                   <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
@@ -538,7 +538,7 @@ const Home = () => {
             </div>
             <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--neon-green)]/30 bg-[var(--neon-green)]/10 px-4 py-2 text-xs uppercase tracking-[0.14em] text-[var(--neon-green)]">
               <Star className="h-4 w-4" />
-              Trusted by transformation-focused athletes
+              Built with state-of-the-art ML models
             </div>
           </motion.div>
         </motion.div>
