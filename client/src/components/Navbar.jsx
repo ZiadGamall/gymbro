@@ -170,10 +170,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
           <Link
             to="/"
-            className="flex min-w-0 shrink-0 items-center gap-3 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className="flex min-w-0 shrink-0 items-center gap-5 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent)] text-white shadow-[0_14px_34px_rgba(255,107,44,0.28)]">
-              <Dumbbell className="h-5 w-5" aria-hidden="true" />
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center">
+              <img src="/gymbro-logo.png" alt="GymBro" className="h-full w-full object-contain scale-[1.3]" />
             </div>
             <div className="hidden min-w-0 flex-col justify-center leading-tight sm:flex">
               <div className="font-display whitespace-nowrap text-lg font-bold text-[var(--text-primary)] sm:text-xl">
@@ -187,7 +187,7 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
-            <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-white/5 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1">
               {isLoggedIn ? (
                 <>
                   {PRIMARY_NAV.map((item) => renderNavLink(item))}

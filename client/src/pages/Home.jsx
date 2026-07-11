@@ -118,38 +118,7 @@ const testimonials = [
   },
 ];
 
-const pricingTiers = [
-  {
-    name: "Starter",
-    price: "$0",
-    cadence: "/month",
-    description: "Best for exploring the AI fitness ecosystem.",
-    cta: "Start Free",
-    href: "/register",
-    featured: false,
-    points: ["Basic AI workout plans", "Food search + meal logs", "Essential progress tracking"],
-  },
-  {
-    name: "Pro Athlete",
-    price: "$19",
-    cadence: "/month",
-    description: "For serious transformation and high consistency.",
-    cta: "Go Pro",
-    href: "/register",
-    featured: true,
-    points: ["Advanced AI workout + diet generation", "Premium analytics and readiness scoring", "Full gamification and achievements"],
-  },
-  {
-    name: "Coach Studio",
-    price: "$49",
-    cadence: "/month",
-    description: "Built for coaches and performance teams.",
-    cta: "Contact Sales",
-    href: "/register",
-    featured: false,
-    points: ["Multi-athlete workspace", "Advanced report exports", "Priority support and roadmap access"],
-  },
-];
+
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -576,78 +545,9 @@ const Home = () => {
       </section>
 
       <section
-        className="px-4 py-20 sm:px-6 lg:px-8"
-        ref={(el) => {
-          sectionRefs.current[3] = el;
-        }}
-      >
-        <motion.div
-          className="mx-auto max-w-7xl"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={stagger}
-        >
-          <motion.div variants={riseUp} className="mx-auto max-w-3xl text-center">
-            <p className="text-sm uppercase tracking-[0.3em] text-[var(--neon-blue)]">Pricing</p>
-            <h2 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl">
-              Choose Your Performance Tier
-            </h2>
-            <p className="mt-5 text-lg text-[var(--text-secondary)]">
-              Built for students, athletes, and coaches who want world-class AI fitness workflows.
-            </p>
-          </motion.div>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {pricingTiers.map((tier) => (
-              <motion.div
-                key={tier.name}
-                variants={riseUp}
-                className={`rounded-[1.8rem] p-7 ${
-                  tier.featured
-                    ? "relative border border-[var(--neon-blue)]/35 bg-[linear-gradient(180deg,rgba(7,24,45,0.9),rgba(4,16,32,0.86))] shadow-[0_24px_80px_rgba(13,208,255,0.22)]"
-                    : "card-glass-premium"
-                }`}
-              >
-                {tier.featured && (
-                  <span className="absolute right-5 top-5 rounded-full border border-[var(--neon-blue)]/40 bg-[var(--neon-blue)]/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--neon-blue)]">
-                    Most popular
-                  </span>
-                )}
-                <h3 className="font-display text-2xl font-semibold text-white">{tier.name}</h3>
-                <p className="mt-3 text-sm text-[var(--text-secondary)]">{tier.description}</p>
-                <div className="mt-6 flex items-end gap-1">
-                  <span className="text-5xl font-bold text-white">{tier.price}</span>
-                  <span className="pb-2 text-sm text-[var(--text-tertiary)]">{tier.cadence}</span>
-                </div>
-                <ul className="mt-6 space-y-3">
-                  {tier.points.map((point) => (
-                    <li key={point} className="flex items-start gap-2 text-sm leading-6 text-[var(--text-secondary)]">
-                      <Check className="mt-1 h-4 w-4 text-[var(--neon-green)]" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  to={isLoggedIn ? "/dashboard" : tier.href}
-                  className={`mt-7 inline-flex w-full items-center justify-center rounded-full px-5 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] transition-all ${
-                    tier.featured
-                      ? "bg-[var(--neon-blue)] text-[#031221] hover:brightness-110"
-                      : "border border-white/15 bg-white/5 text-white hover:border-[var(--neon-blue)]/40 hover:bg-white/10"
-                  }`}
-                >
-                  {isLoggedIn ? "Open Dashboard" : tier.cta}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
-      <section
         className="px-4 pb-24 pt-8 sm:px-6 lg:px-8 lg:pb-28"
         ref={(el) => {
-          sectionRefs.current[4] = el;
+          sectionRefs.current[3] = el;
         }}
       >
         <motion.div
@@ -697,8 +597,8 @@ const Home = () => {
       <footer className="border-t border-white/10 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--neon-blue),var(--neon-green))] text-[#021221] shadow-[0_18px_42px_rgba(17,224,255,0.32)]">
-              <Dumbbell className="h-6 w-6" />
+            <div className="flex h-12 w-12 items-center justify-center">
+              <img src="/gymbro-logo.png" alt="GymBro" className="h-full w-full object-contain scale-[1.3]" />
             </div>
             <div>
               <div className="font-display text-xl font-bold text-white">GymBro AI Performance</div>

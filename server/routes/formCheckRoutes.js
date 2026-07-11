@@ -6,6 +6,7 @@ const { uploadVideo } = require("../utils/upload");
 const router = express.Router();
 
 router.get("/history", protect, formCheckController.getFormCheckHistory);
+router.get("/video-url/:recordId", protect, formCheckController.getVideoUrl);
 
 router.post(
   "/analyze",

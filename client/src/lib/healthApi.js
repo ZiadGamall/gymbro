@@ -329,6 +329,13 @@ export async function loadFormCheckHistory() {
   return Array.isArray(raw) ? raw : [];
 }
 
+export async function getFormCheckVideoUrl(recordId) {
+  const res = await axios.get(`/api/v1/form-check/video-url/${recordId}`, {
+    headers: authHeaders(),
+  });
+  return res?.data?.videoUrl || null;
+}
+
 /* ─── Recovery / sleep ────────────────────────────────────────────────────── */
 
 export async function getRecoveryRecommendation(payload) {
@@ -356,4 +363,3 @@ export async function updateUserAccount(formData) {
   });
   return res?.data;
 }
-

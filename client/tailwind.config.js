@@ -40,6 +40,11 @@ module.exports = {
       spacing: {
         "tab-bar": "72px",
       },
+
+      // ── Override max-width to reduce gutters on large screens ────────────
+      maxWidth: {
+        "7xl": "1300px",
+      },
     },
   },
   plugins: [],

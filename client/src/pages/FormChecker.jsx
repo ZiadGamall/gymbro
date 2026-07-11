@@ -5,6 +5,7 @@ import {
   analyzeFormVideo,
   getApiError,
   loadFormCheckHistory,
+  getFormCheckVideoUrl,
 } from "../lib/healthApi";
 
 const MODES = ["Beginner", "Pro"];
@@ -22,6 +23,7 @@ const FormChecker = () => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [result, setResult] = useState(null);
+  const [videoUrl, setVideoUrl] = useState(null);
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
 
@@ -42,12 +44,20 @@ const FormChecker = () => {
     setLoading(true);
     setError("");
     setResult(null);
+    setVideoUrl(null);
     setProgress("Uploading video…");
 
     try {
       setProgress("Analyzing form with AI…");
       const data = await analyzeFormVideo(file, mode, exercise);
       setResult(data);
+      
+      if (data && data.output_video) {
+        setProgress("Fetching secure video link…");
+        const url = await getFormCheckVideoUrl(data._id);
+        setVideoUrl(url);
+      }
+
       setProgress("");
       const updated = await loadFormCheckHistory();
       setHistory(updated);
@@ -152,8 +162,25 @@ const FormChecker = () => {
         </button>
       </form>
 
+      {videoUrl && (
+        <section id="video-player-section" className="card-surface mb-6">
+          <h2 className="font-display text-lg font-semibold text-primary mb-4">Processed Video</h2>
+          <div className="rounded-xl overflow-hidden border border-border bg-black">
+            <video
+              src={videoUrl}
+              controls
+              autoPlay
+              muted
+              className="w-full h-auto max-h-[60vh] object-contain"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </section>
+      )}
+
       {result && (
-        <section className="card-surface mb-6" aria-live="polite">
+        <section id="results-section" className="card-surface mb-6" aria-live="polite">
           <h2 className="font-display text-lg font-semibold text-primary mb-4">Results</h2>
           <div className="grid sm:grid-cols-3 gap-4 mb-5">
             <div className="card-elevated text-center">
@@ -192,12 +219,6 @@ const FormChecker = () => {
               </div>
             </div>
           )}
-
-          {result.output_video && (
-            <p className="text-sm text-secondary mt-4">
-              Annotated output video saved on server: {result.output_video}
-            </p>
-          )}
         </section>
       )}
 
@@ -209,16 +230,39 @@ const FormChecker = () => {
           </div>
           <div className="space-y-2">
             {history.slice(0, 5).map((item) => (
-              <div key={item._id} className="session-row">
+              <div key={item._id} className="session-row items-center cursor-pointer hover:bg-accent/5 transition-colors" onClick={async () => {
+                if (item.output_video) {
+                  setProgress(`Loading previous video for ${item.exercise}…`);
+                  try {
+                    const url = await getFormCheckVideoUrl(item._id);
+                    setVideoUrl(url);
+                  } catch (err) {
+                    setError("Failed to load video.");
+                  }
+                  setProgress("");
+                } else {
+                  setError("No video found for this form check.");
+                  setVideoUrl(null);
+                }
+                setResult(item);
+                
+                setTimeout(() => {
+                  const targetId = item.output_video ? "video-player-section" : "results-section";
+                  document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+              }}>
                 <div>
                   <p className="font-body text-sm font-medium text-primary">{item.exercise}</p>
                   <p className="font-body text-xs text-tertiary">
                     {item.correct_reps} clean · {item.incorrect_reps} flagged · {item.mode}
                   </p>
                 </div>
-                <span className="text-xs text-tertiary">
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs text-tertiary">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </span>
+                  {item.output_video && <Video className="w-4 h-4 text-accent" />}
+                </div>
               </div>
             ))}
           </div>
