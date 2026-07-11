@@ -385,6 +385,26 @@ const Train = () => {
           </Link>
         </div>
 
+        {/* ── CTA bridge to Exercise Library ─────────────────────────────── */}
+        <div className="card-elevated flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-display text-[14px] font-semibold text-primary">
+              Exercise Library
+            </p>
+            <p className="font-body text-[11px] text-secondary mt-[2px] truncate">
+              Browse exercises, view animations, and read instructions
+            </p>
+          </div>
+          <Link
+            to="/exercise-search"
+            className="btn-ghost flex items-center gap-2 flex-shrink-0 text-[var(--neon-blue)]"
+            aria-label="Open Exercise Library"
+          >
+            Explore
+            <ArrowRight className="w-4 h-4" strokeWidth={2} />
+          </Link>
+        </div>
+
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ import WorkoutLogger    from "./pages/WorkoutLogger";
 import WorkoutBuilder   from "./pages/WorkoutBuilder";
 import ProfileHub       from "./pages/ProfileHub";
 import MuscleLab        from "./pages/MuscleLab";
+import ExerciseSearch   from "./pages/ExerciseSearch";
 
 // ── Day 2: new shell ──────────────────────────────────────────────────────────
 import BottomTabBar from "./components/navigation/BottomTabBar";
@@ -97,6 +98,7 @@ function AppShell() {
         <Route path="/progress"          element={<ProgressHub />}     />
         <Route path="/muscle-lab"        element={<MuscleLab />}       />
         <Route path="/food-search"       element={<FoodSearch />}      />
+        <Route path="/exercise-search"   element={<ExerciseSearch />}  />
         <Route path="/onboarding"        element={<Onboarding />}      />
         <Route path="/account-settings"  element={<AccountSettings />} />
         <Route path="/change-password"   element={<ChangePassword />}  />
