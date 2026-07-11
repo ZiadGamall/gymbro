@@ -89,7 +89,7 @@ export default function MuscleSelector({ className = "" }) {
     >
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_0%,rgba(33,196,93,0.1),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(11,155,213,0.08),transparent_28%)]" />
 
-      <div className="relative z-10 p-5 md:p-7 border-b border-[#243444]">
+      <div className="relative z-10 p-5 md:p-7 border-b border-border">
         <h2 className="text-2xl font-bold text-[var(--text-primary)]">Interactive Muscle Diagram</h2>
         <p className="text-[var(--text-secondary)] mt-1 text-sm md:text-base max-w-3xl">
           Click muscles to select or deselect. Workouts are generated only when you click Recommend Workout.
@@ -117,7 +117,7 @@ export default function MuscleSelector({ className = "" }) {
           onMuscleToggle={toggleMuscle}
         />
 
-        <aside className="rounded-2xl border border-[#2a3a4a] bg-[#111c26] p-4 md:p-5 h-fit lg:sticky lg:top-6">
+        <aside className="rounded-2xl border border-border bg-elevated p-4 md:p-5 h-fit lg:sticky lg:top-6">
           <h3 className="text-[var(--text-primary)] font-semibold">Selected Muscles</h3>
           <p className="text-xs text-[var(--text-secondary)] mt-1">{selectedMuscles.length} selected</p>
 
@@ -129,12 +129,12 @@ export default function MuscleSelector({ className = "" }) {
             {selectedMuscles.map((muscle) => (
               <span
                 key={muscle}
-                className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#3a1420] text-[#fecdd3] border border-[#7f1d35] inline-flex items-center gap-2"
+                className="px-3 py-1.5 rounded-full text-xs font-medium bg-[var(--danger-subtle)] text-primary border border-[var(--danger-border)] inline-flex items-center gap-2"
               >
                 {MUSCLE_DATA[muscle]?.name}
                 <button
                   type="button"
-                  className="text-[#fda4af] hover:text-[#ffe4e8]"
+                  className="text-primary hover:text-primary"
                   onClick={() => toggleMuscle(muscle)}
                   aria-label={`Remove ${MUSCLE_DATA[muscle]?.name}`}
                 >
@@ -147,7 +147,7 @@ export default function MuscleSelector({ className = "" }) {
           <button
             type="button"
             onClick={clearSelection}
-            className="mt-4 w-full rounded-xl border border-[#3b4f63] px-4 py-3 text-sm font-medium text-[#d7e3ef] bg-[#172633] hover:bg-[#1f3344] transition-colors"
+            className="mt-4 w-full rounded-xl border border-border px-4 py-3 text-sm font-medium text-secondary bg-elevated hover:bg-elevated transition-colors"
             disabled={selectedMuscles.length === 0}
           >
             Clear All
@@ -157,7 +157,7 @@ export default function MuscleSelector({ className = "" }) {
             type="button"
             disabled={selectedMuscles.length === 0}
             onClick={recommendWorkouts}
-            className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#e11d48] px-4 py-3 text-sm font-semibold text-white hover:bg-[#be123c] shadow-[0_10px_20px_rgba(225,29,72,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#e11d48] px-4 py-3 text-sm font-semibold text-inverse hover:bg-[#be123c] shadow-[0_10px_20px_rgba(225,29,72,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Recommend Workout
             <ChevronRight className="w-4 h-4" />

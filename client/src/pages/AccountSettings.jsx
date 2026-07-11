@@ -210,7 +210,7 @@ const AccountSettings = () => {
                     </div>
                     <label
                       htmlFor="photo"
-                      className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-[var(--accent)] text-white flex items-center justify-center cursor-pointer hover:bg-[var(--accent-hover)] transition-colors"
+                      className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-[var(--accent)] text-inverse flex items-center justify-center cursor-pointer hover:bg-[var(--accent-hover)] transition-colors"
                       title="Change photo"
                     >
                       <Camera className="w-5 h-5" />
@@ -347,7 +347,7 @@ const AccountSettings = () => {
 
               <div className="border-t border-[var(--border)] pt-6">
                 <label className="block text-[var(--text-primary)] font-medium mb-2">
-                  Current password <span className="text-red-400">*</span>
+                  Current password <span className="text-[var(--danger)]">*</span>
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
@@ -388,7 +388,7 @@ const AccountSettings = () => {
                 >
                   {loading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
                       Saving…
                     </>
                   ) : (

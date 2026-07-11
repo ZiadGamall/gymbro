@@ -254,7 +254,7 @@ const NutritionDiary = () => {
                           setError(getApiError(err, "Failed to delete nutrition entry."));
                         }
                       }}
-                      className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-[var(--bg-tertiary)]"
+                      className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--danger)] hover:bg-[var(--bg-tertiary)]"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

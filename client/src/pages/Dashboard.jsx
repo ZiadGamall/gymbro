@@ -178,7 +178,7 @@ const Dashboard = () => {
       value: `${Math.round(totals.calories)}`,
       hint: `Target ${calorieTarget} kcal`,
       icon: Flame,
-      tone: 'text-orange-400',
+      tone: 'text-[var(--warning)]',
     },
     {
       title: 'Protein Today',
@@ -192,7 +192,7 @@ const Dashboard = () => {
       value: `${streak}d`,
       hint: 'Consecutive active days',
       icon: Trophy,
-      tone: 'text-yellow-400',
+      tone: 'text-[var(--warning)]',
     },
   ]
 
@@ -272,11 +272,11 @@ const Dashboard = () => {
         <motion.section variants={fadeUp} className="card-glass-premium rounded-[2rem] p-6 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] sm:text-sm">
+              <div className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-glass-bg px-4 py-2 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] sm:text-sm">
                 <Sparkles className="h-4 w-4 text-[var(--neon-blue)]" />
                 AI Command Center
               </div>
-              <h1 className="mt-5 font-display text-4xl font-bold text-white sm:text-5xl">
+              <h1 className="mt-5 font-display text-4xl font-bold text-inverse sm:text-5xl">
                 Welcome back, {user.firstName || user.username || 'Athlete'}
               </h1>
               <p className="mt-3 max-w-2xl text-[var(--text-secondary)]">
@@ -287,7 +287,7 @@ const Dashboard = () => {
             <div className="card-neon flex items-center gap-6 rounded-[1.4rem] p-5">
               <div>
                 <div className="text-xs uppercase tracking-[0.2em] text-[var(--text-tertiary)]">Daily readiness</div>
-                <div className="mt-2 text-4xl font-bold text-white">{readinessScore}%</div>
+                <div className="mt-2 text-4xl font-bold text-inverse">{readinessScore}%</div>
               </div>
               <div
                 className="flex h-20 w-20 items-center justify-center rounded-full"
@@ -296,7 +296,7 @@ const Dashboard = () => {
                 }}
                 aria-label={`Daily readiness ${readinessScore} percent`}
               >
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#091422] text-sm font-semibold text-white">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface text-sm font-semibold text-inverse">
                   {readinessScore}
                 </div>
               </div>
@@ -311,11 +311,11 @@ const Dashboard = () => {
               <motion.article key={card.title} variants={fadeUp} className="card-neon rounded-[1.5rem] p-5">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-[var(--text-secondary)]">{card.title}</span>
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-2.5">
+                  <div className="rounded-xl border border-glass-border bg-glass-bg p-2.5">
                     <Icon className={`h-5 w-5 ${card.tone}`} />
                   </div>
                 </div>
-                <div className="mt-4 text-4xl font-bold text-white">{card.value}</div>
+                <div className="mt-4 text-4xl font-bold text-inverse">{card.value}</div>
                 <div className="mt-2 text-sm text-[var(--text-tertiary)]">{card.hint}</div>
               </motion.article>
             )
@@ -325,7 +325,7 @@ const Dashboard = () => {
         <motion.section variants={stagger} className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <motion.article variants={fadeUp} className="card-glass-premium rounded-[1.8rem] p-6 sm:p-7">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-2xl font-semibold text-white">Weekly Performance</h2>
+              <h2 className="font-display text-2xl font-semibold text-inverse">Weekly Performance</h2>
               <Link to="/progress" className="inline-flex items-center text-sm font-semibold text-[var(--neon-blue)]">
                 Open Progress Hub
                 <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -338,7 +338,7 @@ const Dashboard = () => {
                 const workoutHeight = Math.max(8, Number(day.workouts || 0) * 22)
                 return (
                   <div key={`${day.date}_${day.calories}`} className="flex flex-col items-center gap-2">
-                    <div className="flex h-40 w-full items-end justify-center gap-1 rounded-xl border border-white/10 bg-white/5 p-2">
+                    <div className="flex h-40 w-full items-end justify-center gap-1 rounded-xl border border-glass-border bg-glass-bg p-2">
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: reduceMotion ? caloriesHeight : caloriesHeight }}
@@ -373,17 +373,17 @@ const Dashboard = () => {
           </motion.article>
 
           <motion.article variants={fadeUp} className="card-neon rounded-[1.8rem] p-6 sm:p-7">
-            <h2 className="font-display text-2xl font-semibold text-white">AI Recommendations</h2>
+            <h2 className="font-display text-2xl font-semibold text-inverse">AI Recommendations</h2>
             <div className="mt-5 space-y-4">
               {recommendations.map((item) => (
-                <div key={item.title} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <div key={item.title} className="rounded-xl border border-glass-border bg-glass-bg p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="font-semibold text-white">{item.title}</p>
+                    <p className="font-semibold text-inverse">{item.title}</p>
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs uppercase tracking-[0.1em] ${
                         item.done
                           ? 'border border-[var(--neon-green)]/30 bg-[var(--neon-green)]/10 text-[var(--neon-green)]'
-                          : 'border border-orange-400/30 bg-orange-500/10 text-orange-300'
+                          : 'border border-[var(--warning-border)] bg-[var(--warning-subtle)] text-[var(--warning)]'
                       }`}
                     >
                       {item.done ? 'On track' : 'Action'}
@@ -403,7 +403,7 @@ const Dashboard = () => {
 
         <motion.section variants={stagger} className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
           <motion.article variants={fadeUp} className="card-glass-premium rounded-[1.8rem] p-6 sm:p-7">
-            <h2 className="font-display text-2xl font-semibold text-white">Quick Actions</h2>
+            <h2 className="font-display text-2xl font-semibold text-inverse">Quick Actions</h2>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {quickActions.map((action) => {
                 const Icon = action.icon
@@ -411,12 +411,12 @@ const Dashboard = () => {
                   <Link
                     key={action.title}
                     to={action.href}
-                    className="group rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--neon-blue)]/40"
+                    className="group rounded-2xl border border-glass-border bg-glass-bg p-5 transition-all duration-300 hover:scale-[1.02] hover:border-[var(--neon-blue)]/40"
                   >
-                    <div className={`inline-flex rounded-xl bg-gradient-to-br ${action.accent} p-2.5 text-[#041524]`}>
+                    <div className={`inline-flex rounded-xl bg-gradient-to-br ${action.accent} p-2.5 text-surface`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="mt-4 font-semibold text-white">{action.title}</h3>
+                    <h3 className="mt-4 font-semibold text-inverse">{action.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{action.desc}</p>
                     <span className="mt-4 inline-flex items-center text-xs uppercase tracking-[0.1em] text-[var(--neon-blue)]">
                       Open
@@ -429,7 +429,7 @@ const Dashboard = () => {
           </motion.article>
 
           <motion.article variants={fadeUp} className="card-neon rounded-[1.8rem] p-6">
-            <h2 className="font-display text-xl font-semibold text-white">Macro Pulse</h2>
+            <h2 className="font-display text-xl font-semibold text-inverse">Macro Pulse</h2>
             <div className="mt-4 space-y-4">
               {[
                 { label: 'Calories', value: caloriesPercent, icon: Flame, color: 'var(--neon-blue)' },
@@ -438,15 +438,15 @@ const Dashboard = () => {
               ].map((item) => {
                 const Icon = item.icon
                 return (
-                  <div key={item.label} className="rounded-xl border border-white/10 bg-white/5 p-3.5">
+                  <div key={item.label} className="rounded-xl border border-glass-border bg-glass-bg p-3.5">
                     <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
                       <span className="inline-flex items-center gap-2">
                         <Icon className="h-4 w-4" />
                         {item.label}
                       </span>
-                      <span className="font-semibold text-white">{item.value}%</span>
+                      <span className="font-semibold text-inverse">{item.value}%</span>
                     </div>
-                    <div className="mt-2 h-2 rounded-full bg-white/10">
+                    <div className="mt-2 h-2 rounded-full bg-glass-bg">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${item.value}%` }}
@@ -465,7 +465,7 @@ const Dashboard = () => {
 
         <motion.section variants={fadeUp} className="mt-8 card-glass-premium rounded-[1.8rem] p-6 sm:p-7">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="font-display text-2xl font-semibold text-white">Execution Roadmap</h2>
+            <h2 className="font-display text-2xl font-semibold text-inverse">Execution Roadmap</h2>
             <Link to="/progress" className="btn-neon-ghost px-5 py-2.5 text-sm">
               Review Analytics
               <BarChart3 className="ml-2 h-4 w-4" />
@@ -493,15 +493,15 @@ const Dashboard = () => {
                 done: completedToday > 0,
               },
             ].map((stepCard) => (
-              <article key={stepCard.step} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <article key={stepCard.step} className="rounded-2xl border border-glass-border bg-glass-bg p-5">
                 <div className="text-xs uppercase tracking-[0.18em] text-[var(--text-tertiary)]">{stepCard.step}</div>
-                <h3 className="mt-3 text-lg font-semibold text-white">{stepCard.title}</h3>
+                <h3 className="mt-3 text-lg font-semibold text-inverse">{stepCard.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">{stepCard.desc}</p>
                 <div
                   className={`mt-4 inline-flex rounded-full px-2.5 py-1 text-xs uppercase tracking-[0.1em] ${
                     stepCard.done
                       ? 'border border-[var(--neon-green)]/30 bg-[var(--neon-green)]/10 text-[var(--neon-green)]'
-                      : 'border border-orange-400/30 bg-orange-500/10 text-orange-300'
+                      : 'border border-[var(--warning-border)] bg-[var(--warning-subtle)] text-[var(--warning)]'
                   }`}
                 >
                   {stepCard.done ? 'Completed' : 'In progress'}

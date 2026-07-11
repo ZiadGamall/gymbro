@@ -105,7 +105,7 @@ const ExerciseSearch = () => {
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 btn-primary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
                   ) : (
                     "Search"
                   )}
@@ -116,7 +116,7 @@ const ExerciseSearch = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-center flex items-center justify-center gap-2">
+            <div className="mb-6 p-4 rounded-xl bg-[var(--danger-subtle)] border border-[var(--danger-border)] text-[var(--danger)] text-center flex items-center justify-center gap-2">
               <ShieldAlert className="w-5 h-5" />
               {error}
             </div>
@@ -255,7 +255,7 @@ const ExerciseSearch = () => {
                     
                     {/* Visualizer */}
                     {selectedExercise.gifUrl && (
-                      <div className="w-full bg-white rounded-xl overflow-hidden shadow-inner border border-[var(--border)] relative aspect-square sm:aspect-video lg:aspect-square flex items-center justify-center p-2">
+                      <div className="w-full bg-surface rounded-xl overflow-hidden shadow-inner border border-[var(--border)] relative aspect-square sm:aspect-video lg:aspect-square flex items-center justify-center p-2">
                         <img 
                           src={selectedExercise.gifUrl} 
                           alt={selectedExercise.name} 

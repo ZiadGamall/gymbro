@@ -302,15 +302,15 @@ const Home = () => {
           className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]"
         >
           <motion.div variants={riseUp}>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-secondary)] backdrop-blur-xl sm:text-sm">
+            <div className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-glass-bg px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-secondary)] backdrop-blur-xl sm:text-sm">
               <Sparkles className="h-4 w-4 text-[var(--neon-blue)]" />
               AI Performance System 2026
             </div>
 
-            <h1 className="mt-8 max-w-4xl font-display text-5xl font-bold leading-[0.88] text-white sm:text-6xl lg:text-7xl xl:text-[5.4rem]">
+            <h1 className="mt-8 max-w-4xl font-display text-5xl font-bold leading-[0.88] text-inverse sm:text-6xl lg:text-7xl xl:text-[5.4rem]">
               Build Your
               <span className="block text-gradient-neon">Future Physique</span>
-              <span className="block text-[#d8e4ff]">With Cinematic AI Coaching</span>
+              <span className="block text-secondary">With Cinematic AI Coaching</span>
             </h1>
 
             <p className="mt-7 max-w-2xl text-base leading-8 text-[var(--text-secondary)] sm:text-lg">
@@ -363,8 +363,8 @@ const Home = () => {
                 reduceMotion
                   ? undefined
                   : {
-                      transform: `perspective(1200px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
-                    }
+                    transform: `perspective(1200px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
+                  }
               }
               className="card-glass-premium relative overflow-hidden rounded-[2rem] p-6 sm:p-8"
             >
@@ -379,17 +379,17 @@ const Home = () => {
                   </span>
                 </div>
 
-                <h2 className="mt-4 font-display text-3xl font-bold text-white">
+                <h2 className="mt-4 font-display text-3xl font-bold text-inverse">
                   Daily Intelligence Briefing
                 </h2>
 
                 <div className="mt-7 space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-2xl border border-glass-border bg-glass-bg p-4">
                     <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
                       <span>Weekly Consistency</span>
                       <span className="font-semibold text-[var(--neon-green)]">{workoutPercent}%</span>
                     </div>
-                    <div className="mt-3 h-2 rounded-full bg-white/10">
+                    <div className="mt-3 h-2 rounded-full bg-glass-bg">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${workoutPercent}%` }}
@@ -400,14 +400,14 @@ const Home = () => {
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-white/10 bg-[#0a1324]/90 p-4">
+                    <div className="rounded-2xl border border-glass-border bg-surface p-4">
                       <div className="text-xs uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
                         Focus Session
                       </div>
-                      <div className="mt-2 text-2xl font-semibold text-white truncate" title={sessionName}>{sessionName}</div>
+                      <div className="mt-2 text-2xl font-semibold text-inverse truncate" title={sessionName}>{sessionName}</div>
                       <div className="mt-2 text-sm text-[var(--text-secondary)] truncate">{sessionDesc}</div>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-[#0a1324]/90 p-4">
+                    <div className="rounded-2xl border border-glass-border bg-surface p-4">
                       <div className="text-xs uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
                         Recovery Index
                       </div>
@@ -453,7 +453,7 @@ const Home = () => {
         >
           <motion.div variants={riseUp} className="mx-auto max-w-3xl text-center">
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--neon-blue)]">Scroll Story</p>
-            <h2 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl">
+            <h2 className="mt-4 font-display text-4xl font-bold text-inverse sm:text-5xl">
               From Intent to Transformation in Three Intelligent Loops
             </h2>
           </motion.div>
@@ -467,11 +467,11 @@ const Home = () => {
                     <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--text-tertiary)]">
                       Step {step.step}
                     </span>
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-[var(--neon-blue)]">
+                    <div className="rounded-xl border border-glass-border bg-glass-bg p-2.5 text-[var(--neon-blue)]">
                       <Icon className="h-5 w-5" />
                     </div>
                   </div>
-                  <h3 className="mt-5 font-display text-2xl font-semibold text-white">{step.title}</h3>
+                  <h3 className="mt-5 font-display text-2xl font-semibold text-inverse">{step.title}</h3>
                   <p className="mt-3 leading-7 text-[var(--text-secondary)]">{step.description}</p>
                 </motion.article>
               );
@@ -495,7 +495,7 @@ const Home = () => {
         >
           <motion.div variants={riseUp} className="max-w-2xl">
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--neon-green)]">Feature Matrix</p>
-            <h2 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl">
+            <h2 className="mt-4 font-display text-4xl font-bold text-inverse sm:text-5xl">
               Product Modules Built for Relentless Consistency
             </h2>
           </motion.div>
@@ -506,17 +506,17 @@ const Home = () => {
               return (
                 <motion.div key={feature.title} variants={riseUp} className="card-glass-premium rounded-[1.8rem] p-7">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-[var(--neon-blue)]">
+                    <div className="rounded-xl border border-glass-border bg-glass-bg p-3 text-[var(--neon-blue)]">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="font-display text-2xl font-semibold text-white">{feature.title}</h3>
+                    <h3 className="font-display text-2xl font-semibold text-inverse">{feature.title}</h3>
                   </div>
                   <p className="mt-4 leading-7 text-[var(--text-secondary)]">{feature.desc}</p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     {feature.bullets.map((bullet) => (
                       <span
                         key={bullet}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--text-secondary)]"
+                        className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-glass-bg px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--text-secondary)]"
                       >
                         <Check className="h-3.5 w-3.5 text-[var(--neon-green)]" />
                         {bullet}
@@ -550,12 +550,12 @@ const Home = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
-              className="mt-6 text-xl leading-9 text-[#dce8ff] sm:text-2xl"
+              className="mt-6 text-xl leading-9 text-secondary sm:text-2xl"
             >
               "{testimonials[activeTestimonial].quote}"
             </motion.blockquote>
             <div className="mt-6">
-              <div className="text-lg font-semibold text-white">{testimonials[activeTestimonial].name}</div>
+              <div className="text-lg font-semibold text-inverse">{testimonials[activeTestimonial].name}</div>
               <div className="text-sm text-[var(--text-secondary)]">{testimonials[activeTestimonial].role}</div>
             </div>
             <div className="mt-7 flex gap-2">
@@ -564,9 +564,8 @@ const Home = () => {
                   key={item.name}
                   type="button"
                   onClick={() => setActiveTestimonial(index)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    index === activeTestimonial ? "w-9 bg-[var(--neon-blue)]" : "w-2.5 bg-white/20"
-                  }`}
+                  className={`h-2.5 rounded-full transition-all ${index === activeTestimonial ? "w-9 bg-[var(--neon-blue)]" : "w-2.5 bg-glass-bg"
+                    }`}
                   aria-label={`View testimonial from ${item.name}`}
                 />
               ))}
@@ -575,7 +574,7 @@ const Home = () => {
 
           <motion.div variants={riseUp} className="card-neon rounded-[2rem] p-8 sm:p-10">
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--neon-green)]">System Performance</p>
-            <h3 className="mt-4 font-display text-3xl font-bold text-white">Core Engine Metrics</h3>
+            <h3 className="mt-4 font-display text-3xl font-bold text-inverse">Core Engine Metrics</h3>
             <div className="mt-8 space-y-5">
               {[
                 { name: "AI Plan Accuracy", val: 95 },
@@ -585,9 +584,9 @@ const Home = () => {
                 <div key={metric.name}>
                   <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
                     <span>{metric.name}</span>
-                    <span className="font-semibold text-white">{metric.val}%</span>
+                    <span className="font-semibold text-inverse">{metric.val}%</span>
                   </div>
-                  <div className="mt-2 h-2 rounded-full bg-white/10">
+                  <div className="mt-2 h-2 rounded-full bg-glass-bg">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: `${metric.val}%` }}
@@ -620,13 +619,13 @@ const Home = () => {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto max-w-7xl"
         >
-          <div className="relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-[linear-gradient(125deg,rgba(7,18,34,0.95)_0%,rgba(4,24,39,0.92)_60%,rgba(7,18,34,0.95)_100%)] px-6 py-12 shadow-[0_30px_100px_rgba(3,8,16,0.55)] sm:px-10 lg:px-14">
+          <div className="relative overflow-hidden rounded-[2.2rem] border border-glass-border bg-surface px-6 py-12 shadow-[var(--shadow-strong)] sm:px-10 lg:px-14">
             <div className="pointer-events-none absolute -right-14 top-0 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(25,232,255,0.32)_0%,rgba(25,232,255,0)_70%)]" />
             <div className="pointer-events-none absolute -bottom-16 left-0 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(28,255,153,0.28)_0%,rgba(28,255,153,0)_72%)]" />
             <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
               <div>
                 <p className="text-sm uppercase tracking-[0.32em] text-[var(--neon-green)]">Final Call</p>
-                <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold text-white sm:text-5xl">
+                <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold text-inverse sm:text-5xl">
                   {isLoggedIn
                     ? "Lock in your next streak and execute with intent."
                     : "The AI fitness ecosystem is ready. Build your edge now."}
@@ -657,14 +656,14 @@ const Home = () => {
         </motion.div>
       </section>
 
-      <footer className="border-t border-white/10 px-4 py-12 sm:px-6 lg:px-8">
+      <footer className="border-t border-glass-border px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center">
               <img src="/gymbro-logo.png" alt="GymBro" className="h-full w-full object-contain scale-[1.3]" />
             </div>
             <div>
-              <div className="font-display text-xl font-bold text-white">GymBro AI Performance</div>
+              <div className="font-display text-xl font-bold text-inverse">GymBro AI Performance</div>
               <div className="text-sm text-[var(--text-secondary)]">
                 Futuristic training, nutrition, and analytics in one premium ecosystem.
               </div>

@@ -239,7 +239,7 @@ const WorkoutLogger = () => {
                     <Dumbbell className="w-4 h-4 text-[var(--accent)]" />
                     {ex.name}
                   </p>
-                  <button type="button" onClick={() => removeExercise(exIdx)} className="text-[var(--text-secondary)] hover:text-red-400">
+                  <button type="button" onClick={() => removeExercise(exIdx)} className="text-[var(--text-secondary)] hover:text-[var(--danger)]">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -302,11 +302,11 @@ const WorkoutLogger = () => {
                       <p className="font-medium text-[var(--text-primary)]">{session.planName}</p>
                       <p className="text-xs text-[var(--text-secondary)]">{session.durationMin} min</p>
                     </div>
-                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <CheckCircle2 className="w-5 h-5 text-[var(--success)]" />
                   </div>
                   <button
                     type="button"
-                    className="text-xs text-red-400 mt-2"
+                    className="text-xs text-[var(--danger)] mt-2"
                     onClick={async () => {
                       await deleteWorkoutSessionApi(session.id || session._id);
                       await refreshSessions();

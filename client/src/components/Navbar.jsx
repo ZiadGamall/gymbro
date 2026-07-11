@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  BatteryCharging,
   ChevronDown,
   ClipboardCheck,
   Dumbbell,
@@ -14,6 +15,7 @@ import {
   Search,
   Settings2,
   Sparkles,
+  Sun,
   TrendingUp,
   User,
   Utensils,
@@ -50,19 +52,20 @@ const PRIMARY_NAV = [
   { path: "/today", label: "Today", icon: LayoutDashboard },
   { path: "/train", label: "Train", icon: Dumbbell },
   { path: "/eat", label: "Eat", icon: Utensils },
+  { path: "/splits", label: "Splits", icon: Layers },
   { path: "/progress", label: "Progress", icon: TrendingUp },
   { path: "/coach", label: "FitBot", icon: Sparkles, matchPrefix: "/coach" },
 ];
 
 const MORE_NAV = [
-  { path: "/splits", label: "Splits", icon: Layers },
   { path: "/workouts", label: "Log Workout", icon: Dumbbell, matchPrefix: "/workouts" },
   { path: "/form-check", label: "Form Check", icon: ClipboardCheck },
-  { path: "/sleep", label: "Recovery", icon: Moon },
+  { path: "/sleep", label: "Recovery", icon: BatteryCharging },
   { path: "/food-search", label: "Foods", icon: Search },
   { path: "/exercise-search", label: "Exercises", icon: Dumbbell },
   { path: "/profile", label: "Profile", icon: User },
-  { path: "/onboarding", label: "Setup", icon: Settings2 },
+  { path: "/account-settings", label: "Manage Account", icon: Settings2 },
+  { path: "/onboarding", label: "Onboarding", icon: Layers },
 ];
 
 const PUBLIC_NAV = [
@@ -79,16 +82,17 @@ function isActive(pathname, item) {
 const navLinkClass = (active) =>
   [
     "relative inline-flex min-h-11 items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold",
-    "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(7,17,29,0.9)]",
+    "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
     active
-      ? "bg-[var(--accent)] text-white shadow-[0_14px_28px_rgba(255,107,44,0.24)]"
-      : "text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]",
+      ? "bg-[var(--accent)] text-white shadow-[0_8px_16px_var(--accent-subtle)]"
+      : "text-[var(--text-secondary)] hover:bg-glass-bg hover:text-[var(--text-primary)]",
   ].join(" ");
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("gymbro.theme") || "dark");
   const [me, setMe] = useState(null);
   const moreRef = useRef(null);
   const navigate = useNavigate();
@@ -133,11 +137,27 @@ const Navbar = () => {
     };
   }, [isMoreOpen]);
 
+  // ── Theme toggle ──
+  useEffect(() => {
+    if (theme === "light") {
+      document.documentElement.classList.add("light-theme");
+    } else {
+      document.documentElement.classList.remove("light-theme");
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("gymbro.theme", next);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("gymbro.fitbot.history.v1");
     setIsLoggedIn(false);
     setMe(null);
-    navigate("/");
+    navigate("/login");
     setIsMobileMenuOpen(false);
   };
 
@@ -170,7 +190,7 @@ const Navbar = () => {
       className="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8"
       aria-label="Main navigation"
     >
-      <div className="mx-auto max-w-7xl rounded-[28px] border border-white/10 bg-[rgba(7,17,29,0.72)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl rounded-[28px] border border-glass-border bg-[var(--navbar-bg)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
         <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
           <Link
             to="/"
@@ -191,7 +211,7 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
-            <div className="flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1">
+            <div className="flex max-w-full items-center gap-1 rounded-full border border-glass-border bg-glass-bg p-1">
               {isLoggedIn ? (
                 <>
                   {PRIMARY_NAV.map((item) => renderNavLink(item))}
@@ -218,7 +238,7 @@ const Navbar = () => {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 8, scale: 0.98 }}
                           transition={{ duration: 0.18 }}
-                          className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[220px] rounded-2xl border border-white/10 bg-[rgba(10,20,34,0.96)] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+                          className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[220px] rounded-2xl border border-glass-border bg-[var(--dropdown-bg)] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.15)] backdrop-blur-xl"
                           role="menu"
                         >
                           {MORE_NAV.map((item) => {
@@ -229,11 +249,10 @@ const Navbar = () => {
                                 key={item.path}
                                 to={item.path}
                                 role="menuitem"
-                                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${
-                                  active
+                                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${active
                                     ? "bg-[var(--accent)]/15 text-[var(--accent)]"
-                                    : "text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]"
-                                }`}
+                                    : "text-[var(--text-secondary)] hover:bg-glass-bg hover:text-[var(--text-primary)]"
+                                  }`}
                               >
                                 <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                                 {item.label}
@@ -252,19 +271,19 @@ const Navbar = () => {
           </div>
 
           <div className="hidden shrink-0 items-center gap-2 lg:flex">
+            <button
+              onClick={toggleTheme}
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-glass-border bg-glass-bg text-[var(--text-primary)] transition-colors duration-200 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
             {isLoggedIn ? (
               <>
-                <Link
-                  to="/account-settings"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                >
-                  <User className="h-4 w-4" aria-hidden="true" />
-                  Account
-                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-200 hover:bg-white/5 hover:text-[var(--error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-200 hover:bg-glass-bg hover:text-[var(--error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                 >
                   <LogOut className="h-4 w-4" aria-hidden="true" />
                   Logout
@@ -282,15 +301,24 @@ const Navbar = () => {
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen((open) => !open)}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[var(--text-primary)] transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] lg:hidden"
-            aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={isMobileMenuOpen}
-          >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <button
+              onClick={toggleTheme}
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-glass-border bg-glass-bg text-[var(--text-primary)] transition-colors duration-200 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-glass-border bg-glass-bg text-[var(--text-primary)] transition-colors duration-200 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         <AnimatePresence>
@@ -300,7 +328,7 @@ const Navbar = () => {
               animate="visible"
               exit="exit"
               variants={menuVariants}
-              className="overflow-hidden border-t border-white/10 lg:hidden"
+              className="overflow-hidden border-t border-glass-border lg:hidden"
             >
               <div className="max-h-[min(70vh,560px)] space-y-5 overflow-y-auto px-4 py-4 sm:px-5">
                 {isLoggedIn ? (
@@ -332,7 +360,7 @@ const Navbar = () => {
                   </div>
                 )}
 
-                <div className="rounded-[24px] border border-white/10 bg-white/5 p-3">
+                <div className="rounded-[24px] border border-glass-border bg-glass-bg p-3">
                   {isLoggedIn ? (
                     <div className="space-y-2">
                       <div className="px-2 py-1 text-sm text-[var(--text-secondary)]">
@@ -341,7 +369,7 @@ const Navbar = () => {
                       </div>
                       <Link
                         to="/account-settings"
-                        className="flex min-h-11 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-primary)] transition-colors duration-200 hover:bg-white/10"
+                        className="flex min-h-11 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-primary)] transition-colors duration-200 hover:bg-glass-bg"
                       >
                         <User className="h-4 w-4" />
                         Account Settings
@@ -349,7 +377,7 @@ const Navbar = () => {
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-200 hover:bg-white/10 hover:text-[var(--error)]"
+                        className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] transition-colors duration-200 hover:bg-glass-bg hover:text-[var(--error)]"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout

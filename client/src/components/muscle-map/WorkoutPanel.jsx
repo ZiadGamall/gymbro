@@ -16,7 +16,7 @@ export default function WorkoutPanel({
       <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={onClose} />
 
       <div
-        className={`absolute right-0 top-0 h-full w-full sm:w-[560px] bg-[#0f1a24] border-l border-[#2b3e51] shadow-[0_24px_54px_rgba(0,0,0,0.45)] transition-all duration-400 ${
+        className={`absolute right-0 top-0 h-full w-full sm:w-[560px] bg-surface border-l border-border shadow-[0_24px_54px_rgba(0,0,0,0.45)] transition-all duration-400 ${
           open ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
         }`}
       >
@@ -32,7 +32,7 @@ export default function WorkoutPanel({
             </div>
             <button
               type="button"
-              className="w-10 h-10 rounded-xl border border-[#32475b] bg-[#152432] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              className="w-10 h-10 rounded-xl border border-border bg-elevated text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               onClick={onClose}
               aria-label="Close workout recommendations"
             >
@@ -46,7 +46,7 @@ export default function WorkoutPanel({
                 {recommendedMuscles.map((muscle) => (
                   <span
                     key={muscle}
-                    className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#3a1420] border border-[#7f1d35] text-[#fecdd3]"
+                    className="px-3 py-1.5 rounded-full text-xs font-medium bg-[var(--danger-subtle)] border border-[var(--danger-border)] text-primary"
                   >
                     {MUSCLE_DATA[muscle]?.name}
                   </span>
@@ -59,7 +59,7 @@ export default function WorkoutPanel({
                   {workoutCards.map((item, idx) => (
                     <article
                       key={`${item.muscle}_${item.name}_${idx}`}
-                      className="rounded-2xl border border-[#32485d] bg-[#13212e] p-4"
+                      className="rounded-2xl border border-border bg-elevated p-4"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-[var(--text-primary)] text-sm font-semibold">{item.name}</p>
@@ -71,9 +71,9 @@ export default function WorkoutPanel({
                 </div>
               </div>
 
-              <div className="mt-6 rounded-xl border border-[#32485d] bg-[#13212e] p-4">
+              <div className="mt-6 rounded-xl border border-border bg-elevated p-4">
                 <p className="text-sm font-semibold text-[var(--text-primary)] inline-flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#e11d48]" />
+                  <Sparkles className="w-4 h-4 text-primary" />
                   Video Library
                 </p>
                 <div className="mt-3 space-y-3">
@@ -83,7 +83,7 @@ export default function WorkoutPanel({
                       href={getVideoUrl(video)}
                       target="_blank"
                       rel="noreferrer"
-                      className="group block rounded-2xl border border-[#2e4255] bg-[#101d29] overflow-hidden hover:border-[#fda4af] transition-all duration-300"
+                      className="group block rounded-2xl border border-border bg-elevated overflow-hidden hover:border-[#fda4af] transition-all duration-300"
                     >
                       <div className="grid grid-cols-[120px_1fr]">
                         <img
@@ -93,7 +93,7 @@ export default function WorkoutPanel({
                           className="w-full h-full object-cover"
                         />
                         <div className="p-3">
-                          <p className="text-[var(--text-primary)] text-sm font-semibold leading-snug group-hover:text-[#fda4af] transition-colors">
+                          <p className="text-[var(--text-primary)] text-sm font-semibold leading-snug group-hover:text-primary transition-colors">
                             {video.title}
                           </p>
                           <p className="text-xs text-[var(--text-secondary)] mt-1">

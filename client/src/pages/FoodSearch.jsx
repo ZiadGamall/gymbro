@@ -150,10 +150,10 @@ const FoodSearch = () => {
   };
 
   const getNutrientColor = (value, type) => {
-    if (type === "protein") return "text-green-400";
-    if (type === "carbs") return "text-blue-400";
-    if (type === "fat") return "text-yellow-400";
-    if (type === "calories") return "text-orange-400";
+    if (type === "protein") return "text-[var(--success)]";
+    if (type === "carbs") return "text-[var(--accent)]";
+    if (type === "fat") return "text-[var(--warning)]";
+    if (type === "calories") return "text-[var(--warning)]";
     return "text-[var(--text-secondary)]";
   };
 
@@ -198,7 +198,7 @@ const FoodSearch = () => {
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 btn-primary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   "Search"
                 )}
@@ -209,7 +209,7 @@ const FoodSearch = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-center">
+          <div className="mb-6 p-4 rounded-xl bg-[var(--danger-subtle)] border border-[var(--danger-border)] text-[var(--danger)] text-center">
             {error}
           </div>
         )}

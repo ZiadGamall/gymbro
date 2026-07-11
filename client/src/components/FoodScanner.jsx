@@ -139,8 +139,8 @@ const FoodScanner = ({ onEntryAdded, mealType = "snack" }) => {
                 <img src={preview} alt="Meal preview" className="w-full h-full object-cover" />
                 {!loading && (
                   <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
-                    <Camera className="w-8 h-8 text-white mb-2" />
-                    <p className="text-white font-medium">Change Photo</p>
+                    <Camera className="w-8 h-8 text-inverse mb-2" />
+                    <p className="text-inverse font-medium">Change Photo</p>
                   </div>
                 )}
               </>
@@ -179,7 +179,7 @@ const FoodScanner = ({ onEntryAdded, mealType = "snack" }) => {
       {scanResult && !loading && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex gap-4 items-start bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border)]">
-            <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
+            <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-glass-border">
               <img src={preview} alt="Thumbnail" className="w-full h-full object-cover" />
             </div>
             <div>

@@ -165,7 +165,24 @@ const ProfileHub = () => {
             workouts.map((wo) => (
               <div key={wo._id} className="card-surface">
                 <p className="font-medium text-primary">{wo.name}</p>
-                <p className="text-xs text-tertiary mt-1">{wo.exercises?.length || wo.numberOfExercises || 0} exercises</p>
+                <p className="text-xs text-tertiary mt-1 mb-2">
+                  {wo.exercises?.length || wo.numberOfExercises || 0} exercises
+                </p>
+                {wo.exercises && wo.exercises.length > 0 && (
+                  <ul className="mt-2 space-y-1.5 border-t border-glass-border pt-3">
+                    {wo.exercises.map((ex, i) => (
+                      <li key={i} className="text-[13px] text-secondary flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                        <span>{ex.exerciseId?.name || ex.name || 'Exercise'}</span>
+                        {ex.sets && (
+                          <span className="text-tertiary ml-auto text-xs">
+                            {ex.sets.length} sets
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))
           )}

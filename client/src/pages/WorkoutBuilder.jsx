@@ -138,7 +138,7 @@ const WorkoutBuilder = () => {
               className="input-field col-span-3"
               placeholder="Reps"
             />
-            <button type="button" onClick={() => removeExercise(idx)} className="col-span-1 text-red-400">
+            <button type="button" onClick={() => removeExercise(idx)} className="col-span-1 text-[var(--danger)]">
               <Trash2 className="w-4 h-4" />
             </button>
           </div>

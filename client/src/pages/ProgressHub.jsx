@@ -186,7 +186,7 @@ const ProgressHub = () => {
 
             <div className="card-surface">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold mb-2">
-                <Flame className="w-4 h-4 text-orange-400" />
+                <Flame className="w-4 h-4 text-[var(--warning)]" />
                 Nutrition signal
               </div>
               <p className="text-sm text-[var(--text-secondary)]">
@@ -196,7 +196,7 @@ const ProgressHub = () => {
 
             <div className="card-surface">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold mb-2">
-                <Trophy className="w-4 h-4 text-yellow-400" />
+                <Trophy className="w-4 h-4 text-[var(--warning)]" />
                 Milestone
               </div>
               <p className="text-sm text-[var(--text-secondary)]">

@@ -45,7 +45,7 @@ export default function AICoach() {
           {TOOLS.map(({ to, label, icon: Icon, desc }) => (
             <Link key={to} to={to} className="card-surface hover:border-accent/40 transition-colors group">
               <div className="flex items-start gap-3">
-                <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-elevated text-accent group-hover:bg-accent/10">
+                <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-elevated text-accent group-hover:bg-accent/10 shrink-0 transition-colors">
                   <Icon className="w-5 h-5" strokeWidth={1.8} />
                 </span>
                 <div>
@@ -56,12 +56,14 @@ export default function AICoach() {
             </Link>
           ))}
 
-          <Link to="/workouts" className="card-surface hover:border-accent/40 transition-colors group sm:col-span-2">
-            <div className="flex items-center gap-3">
-              <Activity className="w-5 h-5 text-accent" />
+          <Link to="/workouts" className="card-surface hover:border-accent/40 transition-colors group">
+            <div className="flex items-start gap-3">
+              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-elevated text-accent group-hover:bg-accent/10 shrink-0 transition-colors">
+                <Activity className="w-5 h-5" strokeWidth={1.8} />
+              </span>
               <div>
                 <p className="font-display font-semibold text-primary">Log a workout session</p>
-                <p className="font-body text-xs text-secondary">Track sets, reps, weight, and finish your session</p>
+                <p className="font-body text-xs text-secondary mt-0.5">Track sets, reps, weight, and finish your session</p>
               </div>
             </div>
           </Link>
