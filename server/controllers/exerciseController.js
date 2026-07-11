@@ -25,7 +25,7 @@ exports.searchExercisesLogic = async (searchTerm) => {
 exports.getExercises = catchAsync(async (req, res, next) => {
   const searchTerm = req.query.search || "";
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 30;
+  const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
   const regex = new RegExp(escapeRegex(searchTerm), "i");
   

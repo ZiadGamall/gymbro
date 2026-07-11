@@ -14,7 +14,7 @@ const ExerciseSearch = () => {
   
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 30;
+  const limit = 10;
 
   const fetchExercises = async (query = "", pageNum = 1) => {
     try {
@@ -169,8 +169,8 @@ const ExerciseSearch = () => {
 
               {!displayedLoading && results.length > 0 && (
                 <div className="space-y-3 pb-8">
-                  {/* Grid layout for list to use the wider space efficiently */}
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  {/* Single column layout for list */}
+                  <div className="grid grid-cols-1 gap-3">
                     {results.map((ex, index) => (
                       <div
                         key={ex.id || index}

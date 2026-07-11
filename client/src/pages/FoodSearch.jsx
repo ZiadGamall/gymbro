@@ -22,7 +22,7 @@ const FoodSearch = () => {
   const [portionGrams, setPortionGrams] = useState(100);
   
   const [page, setPage] = useState(1);
-  const limit = 20;
+  const limit = 10;
 
   const formatNutrientLabel = (key) => {
     const map = {
