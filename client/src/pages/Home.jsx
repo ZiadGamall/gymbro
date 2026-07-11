@@ -20,7 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import axios from "axios";
-import { parseUserResponse, loadWorkoutSessions, loadNutritionSummary } from "../lib/healthApi";
+import { parseUserResponse, loadWorkoutSessions, loadNutritionSummary, loadWeeklyProgress } from "../lib/healthApi";
 
 const riseUp = {
   hidden: { opacity: 0, y: 30 },
@@ -154,20 +154,24 @@ const Home = () => {
 
         try {
           const today = new Date().toISOString().slice(0, 10);
-          const [todayWorkouts, todayTotals] = await Promise.all([
+          const [todayWorkouts, todayTotals, weeklyProgress] = await Promise.all([
             loadWorkoutSessions(today),
             loadNutritionSummary(today),
+            loadWeeklyProgress(),
           ]);
 
+          let activeDays = 0;
+          if (Array.isArray(weeklyProgress)) {
+            activeDays = weeklyProgress.filter(d => Number(d.workouts || d.completedWorkouts || 0) > 0).length;
+          }
+          const weeklyPercent = Math.min(100, Math.round((activeDays / 4) * 100));
+          setWorkoutPercent(weeklyPercent);
+
           if (todayWorkouts && todayWorkouts.length > 0) {
-            const completedWorkouts = todayWorkouts.filter(s => s.completed).length;
-            setWorkoutPercent(Math.min(100, Math.round((completedWorkouts / Math.max(todayWorkouts.length, 1)) * 100)));
-            
             const lastSession = todayWorkouts[0];
             setSessionName(lastSession.planName || "Workout");
             setSessionDesc(`${lastSession.durationMin} mins, ${lastSession.intensity} intensity`);
           } else {
-            setWorkoutPercent(0);
             setSessionName("Rest Day");
             setSessionDesc("No workouts logged today");
           }
@@ -361,7 +365,7 @@ const Home = () => {
                 <div className="mt-7 space-y-4">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-                      <span>Workout Execution</span>
+                      <span>Weekly Consistency</span>
                       <span className="font-semibold text-[var(--neon-green)]">{workoutPercent}%</span>
                     </div>
                     <div className="mt-3 h-2 rounded-full bg-white/10">
