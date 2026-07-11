@@ -16,7 +16,7 @@ const ExerciseSearch = () => {
   const [total, setTotal] = useState(0);
   const limit = 30;
 
-  const fetchExercises = async (query = "", pageNum = 1, isLoadMore = false) => {
+  const fetchExercises = async (query = "", pageNum = 1) => {
     try {
       const response = await axios.get(
         `/api/v1/exercises/search?search=${encodeURIComponent(query)}&page=${pageNum}&limit=${limit}`,
@@ -26,22 +26,18 @@ const ExerciseSearch = () => {
       const data = response.data;
       if (data.status === "success") {
         const exercises = data.data.exercises || [];
-        
-        if (isLoadMore) {
-          setResults(prev => [...prev, ...exercises]);
+        setResults(exercises);
+        if (exercises.length > 0) {
+            setSelectedExercise(exercises[0]);
         } else {
-          setResults(exercises);
-          setSelectedExercise(exercises[0] || null);
+            setSelectedExercise(null);
         }
-        
         setTotal(data.total || 0);
       }
     } catch (err) {
       setError(getApiError(err, "Failed to load exercises. Please try again."));
-      if (!isLoadMore) {
-        setResults([]);
-        setSelectedExercise(null);
-      }
+      setResults([]);
+      setSelectedExercise(null);
     }
   };
 
@@ -49,7 +45,7 @@ const ExerciseSearch = () => {
     const init = async () => {
       setInitialLoading(true);
       setError("");
-      await fetchExercises("", 1, false);
+      await fetchExercises("", 1);
       setInitialLoading(false);
     };
     init();
@@ -60,20 +56,24 @@ const ExerciseSearch = () => {
     setLoading(true);
     setError("");
     setPage(1);
-    await fetchExercises(searchQuery, 1, false);
+    await fetchExercises(searchQuery, 1);
     setLoading(false);
   };
 
-  const handleLoadMore = async () => {
-    const nextPage = page + 1;
+  const totalPages = Math.ceil(total / limit);
+
+  const handlePageChange = async (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
     setLoadingMore(true);
-    setPage(nextPage);
-    await fetchExercises(searchQuery, nextPage, true);
+    setPage(newPage);
+    await fetchExercises(searchQuery, newPage);
     setLoadingMore(false);
+    
+    // Scroll to top of list
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const displayedLoading = initialLoading || loading;
-  const hasMore = results.length < total;
 
   return (
     <div className="page-shell">
@@ -198,21 +198,24 @@ const ExerciseSearch = () => {
                     ))}
                   </div>
 
-                  {hasMore && (
-                    <div className="pt-4 flex justify-center">
+                  {totalPages > 1 && (
+                    <div className="pt-4 flex items-center justify-center gap-4">
                       <button 
-                        onClick={handleLoadMore} 
-                        disabled={loadingMore}
-                        className="btn-secondary flex items-center gap-2"
+                        onClick={() => handlePageChange(page - 1)} 
+                        disabled={loadingMore || page === 1}
+                        className="btn-secondary px-4 py-2 disabled:opacity-50"
                       >
-                        {loadingMore ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Loading...
-                          </>
-                        ) : (
-                          "Load More Exercises"
-                        )}
+                        Prev
+                      </button>
+                      <span className="text-sm text-[var(--text-secondary)]">
+                        Page {page} of {totalPages}
+                      </span>
+                      <button 
+                        onClick={() => handlePageChange(page + 1)} 
+                        disabled={loadingMore || page === totalPages}
+                        className="btn-secondary px-4 py-2 disabled:opacity-50"
+                      >
+                        Next
                       </button>
                     </div>
                   )}

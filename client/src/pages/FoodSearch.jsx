@@ -20,6 +20,9 @@ const FoodSearch = () => {
   const [selectedFood, setSelectedFood] = useState(null);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [portionGrams, setPortionGrams] = useState(100);
+  
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
   const formatNutrientLabel = (key) => {
     const map = {
@@ -103,6 +106,7 @@ const FoodSearch = () => {
         setSelectedFood(foods[0] || null);
         setPortionGrams(100);
         setIsMoreOpen(false);
+        setPage(1);
       } catch (err) {
         setError(getApiError(err, "Failed to load foods. Please try again."));
         setResults([]);
@@ -122,6 +126,7 @@ const FoodSearch = () => {
     setLoading(true);
     setError("");
     setSelectedFood(null);
+    setPage(1);
 
     try {
       const response = await axios.post("/api/v1/food/search", {
@@ -154,6 +159,15 @@ const FoodSearch = () => {
 
   const displayedLoading = initialLoading || loading;
 
+  const totalPages = Math.ceil(results.length / limit);
+  const paginatedResults = results.slice((page - 1) * limit, page * limit);
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="page-shell">
       <div className="page-content max-w-7xl">
@@ -180,7 +194,7 @@ const FoodSearch = () => {
               />
               <button
                 type="submit"
-                disabled={loading || !searchQuery.trim()}
+                disabled={loading || (!searchQuery.trim() && searchQuery !== "")}
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 btn-primary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
@@ -209,7 +223,7 @@ const FoodSearch = () => {
                 {searchQuery.trim() ? <>Search Results</> : <>Browse Foods</>}
               </h3>
               <div className="text-sm text-[var(--text-secondary)]">
-                {results.length} item{results.length !== 1 ? "s" : ""}
+                Showing {results.length > 0 ? (page - 1) * limit + 1 : 0} - {Math.min(page * limit, results.length)} of {results.length}
               </div>
             </div>
 
@@ -248,8 +262,8 @@ const FoodSearch = () => {
             )}
 
             {!displayedLoading && results.length > 0 && (
-              <div className="space-y-3">
-                {results.map((food, index) => (
+              <div className="space-y-3 pb-8">
+                {paginatedResults.map((food, index) => (
                   <div
                     key={`${food.displayName || "food"}-${index}`}
                     onClick={() => {
@@ -288,6 +302,28 @@ const FoodSearch = () => {
                     </div>
                   </div>
                 ))}
+
+                {totalPages > 1 && (
+                  <div className="pt-4 flex items-center justify-center gap-4">
+                    <button 
+                      onClick={() => handlePageChange(page - 1)} 
+                      disabled={page === 1}
+                      className="btn-secondary px-4 py-2 disabled:opacity-50"
+                    >
+                      Prev
+                    </button>
+                    <span className="text-sm text-[var(--text-secondary)]">
+                      Page {page} of {totalPages}
+                    </span>
+                    <button 
+                      onClick={() => handlePageChange(page + 1)} 
+                      disabled={page === totalPages}
+                      className="btn-secondary px-4 py-2 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
