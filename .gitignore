@@ -11,7 +11,7 @@ data/
 venv/
 __pycache__/
 *.pyc
-ai-services/form-checker/processed_outputs
+processed_outputs/
 ai-services/form-checker/temp_videos
 *.mp4
 *.flv
@@ -21,3 +21,4 @@ test-results/
 .stack/
 ai-services/form-checker/models/
 ai-services/*/venv/
+.agents

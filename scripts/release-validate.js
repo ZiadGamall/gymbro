@@ -5,8 +5,49 @@
 const { execSync, spawnSync } = require("child_process");
 const path = require("path");
 const axios = require("axios");
+const mongoose = require("mongoose");
+const User = require("../server/models/userModel");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config({ path: path.join(__dirname, "../server/.env") });
+
+async function ensureVerifiedUser() {
+  const username = process.env.SMOKE_USERNAME || "gymbro_smoke";
+  const password = process.env.SMOKE_PASSWORD || "SmokeTest123!";
+  const email = process.env.SMOKE_EMAIL || "gymbro.smoke@test.local";
+
+  await mongoose.connect(process.env.MONGO_URL, {
+    serverSelectionTimeoutMS: Number(process.env.MONGO_TIMEOUT_MS) || 10000,
+  });
+
+  let user = await User.findOne({ username }).select("+password");
+
+  if (!user) {
+    user = await User.create({
+      firstName: "Smoke",
+      lastName: "Tester",
+      username,
+      email,
+      password,
+      passwordConfirm: password,
+      gender: "male",
+      isVerified: true,
+      height: 175,
+      weight: 70,
+      dateOfBirth: "1995-01-15",
+    });
+  } else if (!user.isVerified) {
+    user.isVerified = true;
+    await user.save({ validateBeforeSave: false });
+  }
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  await mongoose.disconnect();
+  return { token, userId: user._id.toString(), username };
+}
 
 async function probeSplitToday() {
   const login = await axios
@@ -14,7 +55,10 @@ async function probeSplitToday() {
       username: "gymbro_smoke",
       password: "SmokeTest123!",
     })
-    .catch(() => null);
+    .catch((e) => {
+      console.error("[release] Login request failed:", e.response?.status, e.response?.data || e.message);
+      return null;
+    });
 
   if (!login?.data?.token) return { ok: false, detail: "smoke login failed" };
 
@@ -38,6 +82,7 @@ async function main() {
   });
   execSync("node scripts/ensure-stack.js", { stdio: "inherit" });
 
+  await ensureVerifiedUser();
   const splitProbe = await probeSplitToday();
   console.log(
     `[release] GET /api/v1/split/today → ${splitProbe.status || "ERR"} ${splitProbe.ok ? "✓" : "✗"}`,

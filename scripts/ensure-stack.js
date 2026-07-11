@@ -5,6 +5,7 @@
  */
 const path = require("path");
 const fs = require("fs");
+process.env.BACKGROUND_STACK = "true";
 const { services } = require("./stack.config");
 const {
   httpProbe,
@@ -113,6 +114,7 @@ async function main() {
   }
 
   console.log("\n[ensure-stack] All process services ready.\n");
+  process.exit(0);
 }
 
 main().catch((err) => {

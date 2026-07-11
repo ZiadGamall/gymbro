@@ -1,7 +1,7 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:5001";
+const ML_SERVICE_URL = process.env.CALORIE_SERVICE_URL || "http://localhost:5001";
 
 const predictCalories = catchAsync(async (req, res, next) => {
   const errors = validatePredictBody(req.body);

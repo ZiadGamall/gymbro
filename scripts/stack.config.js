@@ -66,7 +66,7 @@ module.exports = {
       healthMatch: (body) => body?.status === "ok",
       python: true,
       cwd: path.join(ROOT, "ai-services", "form-checker"),
-      requirements: "requirements-minimal.txt",
+      requirements: "requirements.txt",
       uvicornModule: "main:app",
       required: true,
       aiRelated: true,

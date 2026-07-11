@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const FORM_CHECKER_URL =
-  process.env.FORM_CHECKER_URL || "http://127.0.0.1:8000";
+  process.env.FORM_CHECKER_SERVICE_URL || "http://127.0.0.1:8000";
 
 exports.forwardVideoToAI = async (
   videoPath,

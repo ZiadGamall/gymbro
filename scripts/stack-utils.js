@@ -135,7 +135,7 @@ function runCommand(cmd, args, cwd) {
     const child = spawn(cmd, args, {
       cwd,
       stdio: "inherit",
-      shell: process.platform === "win32",
+      shell: false,
       env: process.env,
     });
     child.on("error", reject);
@@ -148,6 +148,9 @@ function runCommand(cmd, args, cwd) {
 
 function spawnService(service, env = {}) {
   const mergedEnv = { ...process.env, ...env };
+  const isBg = process.env.BACKGROUND_STACK === "true";
+  const stdio = isBg ? "ignore" : "pipe";
+  const detached = isBg;
 
   if (service.python) {
     const uvicorn = uvicornBin(service.cwd) || pythonBin(service.cwd);
@@ -158,8 +161,9 @@ function spawnService(service, env = {}) {
 
     return spawn(uvicorn, args, {
       cwd: service.cwd,
-      stdio: "pipe",
+      stdio,
       shell: false,
+      detached,
       env: mergedEnv,
     });
   }
@@ -167,14 +171,16 @@ function spawnService(service, env = {}) {
   if (service.command?.script) {
     return spawn(process.execPath, [path.join(service.cwd || ".", service.command.script)], {
       cwd: service.cwd,
-      stdio: "pipe",
+      stdio,
+      detached,
       env: mergedEnv,
     });
   }
 
   return spawn(service.command.exec, service.command.args, {
     cwd: service.cwd,
-    stdio: "pipe",
+    stdio,
+    detached,
     env: mergedEnv,
   });
 }
