@@ -11,7 +11,31 @@ exports.getMealEntries = factory.getAllFieldFilter(MealEntry);
 exports.deleteMealEntry = factory.deleteOne(MealEntry);
 
 exports.addMealEntry = catchAsync(async (req, res, next) => {
-  const { foodId, weightConsumed, mealType, date } = req.body;
+  const { foodId, weightConsumed, mealType, date, isCustom, foodName, calories, protein, carbs, fat } = req.body;
+
+  if (isCustom) {
+    if (!foodName || calories == null || protein == null || carbs == null || fat == null) {
+      return next(new AppError("Missing custom meal data.", 400));
+    }
+
+    const newMealEntry = await MealEntry.create({
+      user: req.user.id,
+      date: date || new Date().toISOString().slice(0, 10),
+      mealType: mealType || "snack",
+      foodName: foodName,
+      calories: Math.round(Number(calories)),
+      protein: Math.round(Number(protein) * 10) / 10,
+      carbs: Math.round(Number(carbs) * 10) / 10,
+      fat: Math.round(Number(fat) * 10) / 10,
+    });
+
+    return res.status(201).json({
+      status: "success",
+      data: {
+        mealEntry: newMealEntry,
+      },
+    });
+  }
 
   // 1. Ensure basic input validation
   if (!foodId) {

@@ -10,6 +10,7 @@ import {
   loadOnboarding,
   searchFoodByName,
 } from "../lib/healthApi";
+import FoodScanner from "../components/FoodScanner";
 
 const mealOptions = ["breakfast", "lunch", "dinner", "snack"];
 
@@ -147,8 +148,10 @@ const NutritionDiary = () => {
             {error && <div className="alert-danger mt-4">{error}</div>}
           </div>
 
+          <FoodScanner onEntryAdded={refreshDay} />
+
           <form onSubmit={handleAdd} className="card-surface space-y-4">
-            <h2 className="font-semibold text-[var(--text-primary)]">Add meal entry</h2>
+            <h2 className="font-semibold text-[var(--text-primary)]">Manual search</h2>
 
             <div className="flex gap-2">
               <input

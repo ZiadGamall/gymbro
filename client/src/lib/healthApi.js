@@ -142,6 +142,26 @@ export async function deleteNutritionEntryApi(id) {
   });
 }
 
+export async function addCustomNutritionEntryApi(payload) {
+  const res = await axios.post("/api/v1/nutrition/entries", payload, {
+    headers: authHeaders(),
+  });
+  const entry = res?.data?.data?.mealEntry || res?.data?.data?.entry;
+  return entry ? { ...entry, id: entry._id || entry.id } : entry;
+}
+
+export async function analyzeFoodImageApi(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+  const res = await axios.post("/api/v1/foodAnalysis/analyze-food", formData, {
+    headers: {
+      ...authHeaders(),
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res?.data?.data || null;
+}
+
 export async function loadNutritionSummary(date) {
   const res = await axios.get("/api/v1/nutrition/summary/today", {
     params: { date },
