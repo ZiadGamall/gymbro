@@ -8,6 +8,7 @@ const FoodScanner = ({ onEntryAdded, mealType = "snack" }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [scanResult, setScanResult] = useState(null);
+  const [baseStats, setBaseStats] = useState(null);
   const [saving, setSaving] = useState(false);
   
   const fileInputRef = useRef(null);
@@ -33,6 +34,7 @@ const FoodScanner = ({ onEntryAdded, mealType = "snack" }) => {
     setPreview(URL.createObjectURL(selected));
     setError("");
     setScanResult(null);
+    setBaseStats(null);
   };
 
   const handleScan = async () => {
@@ -53,20 +55,43 @@ const FoodScanner = ({ onEntryAdded, mealType = "snack" }) => {
         ? result.food_items.join(", ") 
         : "AI Scanned Meal";
         
-      setForm({
+      const initialStats = {
         foodName: combinedName,
         calories: result.total_calories || 0,
         protein: result.protein_g || 0,
         carbs: result.carbs_g || 0,
         fat: result.fat_g || 0,
-        weight: result.estimated_weight_g || 0,
-      });
+        weight: result.estimated_weight_g || 100, // default to 100g if missing
+      };
+
+      setBaseStats(initialStats);
+      setForm(initialStats);
       
     } catch (err) {
       setError("Failed to analyze image. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleWeightChange = (e) => {
+    const newWeight = parseFloat(e.target.value) || 0;
+    
+    if (!baseStats || baseStats.weight <= 0) {
+      setForm({ ...form, weight: newWeight });
+      return;
+    }
+    
+    const ratio = newWeight / baseStats.weight;
+    
+    setForm({
+      ...form,
+      weight: newWeight,
+      calories: Math.round(baseStats.calories * ratio),
+      protein: Math.round(baseStats.protein * ratio),
+      carbs: Math.round(baseStats.carbs * ratio),
+      fat: Math.round(baseStats.fat * ratio),
+    });
   };
 
   const handleSave = async (e) => {
@@ -196,17 +221,35 @@ const FoodScanner = ({ onEntryAdded, mealType = "snack" }) => {
           </div>
 
           <form onSubmit={handleSave} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-1">
-                Meal Description
-              </label>
-              <input
-                type="text"
-                value={form.foodName}
-                onChange={(e) => setForm({ ...form, foodName: e.target.value })}
-                className="input-field w-full"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-4">
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-1">
+                  Meal Description
+                </label>
+                <input
+                  type="text"
+                  value={form.foodName}
+                  onChange={(e) => setForm({ ...form, foodName: e.target.value })}
+                  className="input-field w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-1">
+                  Portion (g)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={form.weight || ''}
+                    onChange={handleWeightChange}
+                    className="input-field w-full pr-8"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] text-sm">
+                    g
+                  </span>
+                </div>
+              </div>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

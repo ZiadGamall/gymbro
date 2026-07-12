@@ -68,27 +68,27 @@ const transformWorkoutPayload = (payload) => {
 
 export async function loadOnboarding() {
   return dedupeInflight("onboarding", async () => {
-  try {
-    const res = await axios.get("/api/v1/onboarding", {
-      headers: authHeaders(),
-    });
-    const onboarding = res?.data?.data?.onboarding;
-    if (onboarding) {
-      const local = getHealthState();
-      saveHealthState({
-        ...local,
-        onboarding: {
-          ...local.onboarding,
-          ...onboarding,
-          completed: true,
-        },
+    try {
+      const res = await axios.get("/api/v1/onboarding", {
+        headers: authHeaders(),
       });
+      const onboarding = res?.data?.data?.onboarding;
+      if (onboarding) {
+        const local = getHealthState();
+        saveHealthState({
+          ...local,
+          onboarding: {
+            ...local.onboarding,
+            ...onboarding,
+            completed: true,
+          },
+        });
+      }
+      return onboarding || null;
+    } catch {
+      const local = getHealthState();
+      return local.onboarding?.completed ? local.onboarding : null;
     }
-    return onboarding || null;
-  } catch {
-    const local = getHealthState();
-    return local.onboarding?.completed ? local.onboarding : null;
-  }
   });
 }
 
@@ -266,7 +266,9 @@ export async function loadSplitById(id) {
 }
 
 export async function loadSavedSplits() {
-  const res = await axios.get("/api/v1/split/saved", { headers: authHeaders() });
+  const res = await axios.get("/api/v1/split/saved", {
+    headers: authHeaders(),
+  });
   return res?.data?.data?.savedSplits || [];
 }
 
@@ -287,7 +289,9 @@ export async function setActiveSplit(splitId, startDayIndex = 0) {
 }
 
 export async function loadTodaySplitWorkout() {
-  const res = await axios.get("/api/v1/split/today", { headers: authHeaders() });
+  const res = await axios.get("/api/v1/split/today", {
+    headers: authHeaders(),
+  });
   const payload = res?.data?.data;
   return payload?.workout ? payload : null;
 }
@@ -327,7 +331,11 @@ export async function searchExercises(term) {
 
 /* ─── Form check ──────────────────────────────────────────────────────────── */
 
-export async function analyzeFormVideo(file, mode = "Beginner", exercise = "squats") {
+export async function analyzeFormVideo(
+  file,
+  mode = "Beginner",
+  exercise = "squats",
+) {
   const formData = new FormData();
   formData.append("video", file);
   formData.append("mode", mode);
